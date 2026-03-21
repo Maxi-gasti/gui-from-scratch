@@ -52,7 +52,7 @@ fn main() -> io::Result<()> {
     // cant depend 100% on the cpu, so, i will use this like a buffer, this is my first time using
     // it with something like 1920x1020 lol.
     let mut window_label: Vec<Vec<String>> = window_map.clone();
-    window_label = label_window(&mut window_label,select,&vec_labels,&select_labels,terminal_x,terminal_y);
+    window_label = label_window(&window_map,select,&vec_labels,&select_labels,terminal_x,terminal_y);
     print_gui(&window_label,terminal_x,terminal_y);
 
     // label_window(&window_map,select,&vec_labels,&select_labels,terminal_x,terminal_y);
@@ -67,7 +67,7 @@ fn main() -> io::Result<()> {
                 vec_labels = reset_labels(vec_labels,width as i32, height as i32);
                 select_labels = define_select_labels(&vec_labels);
                 // 
-                window_label = label_window(&mut window_label,select,&vec_labels,&select_labels,terminal_x,terminal_y);
+                window_label = label_window(&window_map,select,&vec_labels,&select_labels,terminal_x,terminal_y);
                 print_gui(&window_label,terminal_x,terminal_y);
             },
             crossterm::event::Event::Key(crossterm::event::KeyEvent {code, ..} ) => { // DESEMPAQUETA EL STRUCT Keyevent y sacas el code que seria un keycode
@@ -76,13 +76,13 @@ fn main() -> io::Result<()> {
                     crossterm::event::KeyCode::Char('w') | crossterm::event::KeyCode::Up => {
                         if (select-1) >= 0 as i16 {select -= 1}
                         // 
-                        window_label = label_window(&mut window_label,select,&vec_labels,&select_labels,terminal_x,terminal_y);
+                        window_label = label_window(&window_map,select,&vec_labels,&select_labels,terminal_x,terminal_y);
                         print_gui(&window_label,terminal_x,terminal_y);
                     },
                     crossterm::event::KeyCode::Char('s') | crossterm::event::KeyCode::Down => {
                         if (select+1) <= (select_labels.iter().len() as i16 - 1) { select += 1}
                         // 
-                        window_label = label_window(&mut window_label,select,&vec_labels,&select_labels,terminal_x,terminal_y);
+                        window_label = label_window(&window_map,select,&vec_labels,&select_labels,terminal_x,terminal_y);
                         print_gui(&window_label,terminal_x,terminal_y);
                     },
 
@@ -92,8 +92,17 @@ fn main() -> io::Result<()> {
                         match menu_location {
                             "menu" => match select {
                                     0 => {
+
+                                        // ACA UN MENU GUI!
+                                        
+                                        hardware_menu(&window_map,terminal_x,terminal_y);
+                                        print_gui(&window_label,terminal_x,terminal_y);
+
+                                    },
+                                    1 => {},
+                                    2 => {
                                         select = 0;
-                                        menu_location = "hardware_menu";
+                                        menu_location = "styles_menu";
                                         vec_labels = vec![
                                             create_label(&String::from("TEXT"), Some(&40), Some(&4), Some(LabelType::Text),Some(LabelStyle::Text)),
                                             create_label(&String::from("BORDER"), Some(&40), Some(&10), Some(LabelType::Text), Some(LabelStyle::Border)),
@@ -103,12 +112,10 @@ fn main() -> io::Result<()> {
                                             create_label(&String::from("Return to menu"), Some(&10),Some(&(terminal_y as i32 -10)),Some(LabelType::Select),Some(LabelStyle::BottomBorder))
                                         ];
                                         select_labels = define_select_labels(&vec_labels);
-                                        // 
-                                        window_label = label_window(&mut window_label,select,&vec_labels,&select_labels,terminal_x,terminal_y);
+                                        window_label = label_window(&window_map,select,&vec_labels,&select_labels,terminal_x,terminal_y);
+                                        //
                                         print_gui(&window_label,terminal_x,terminal_y);
                                     },
-                                    1 => {},
-                                    2 => {},
                                     3 => {
                                         select = 0;
                                         menu_location = "config";
@@ -118,12 +125,27 @@ fn main() -> io::Result<()> {
                                         vec_labels = asign_labels(vec![format!("CONFIG"),format!("COLOR"),"nose".to_string(),"dosdos".to_string()],terminal_x as i32,terminal_y as i32);
                                         select_labels = define_select_labels(&vec_labels);
                                         // 
-                                        window_label = label_window(&mut window_label,select,&vec_labels,&select_labels,terminal_x,terminal_y);
+                                        window_label = label_window(&window_map,select,&vec_labels,&select_labels,terminal_x,terminal_y);
                                         print_gui(&window_label,terminal_x,terminal_y);
                                     },
                                     4 => { clear_terminal(); break},
                                     _ => {},
                                 },
+
+
+                            "styles_menu" => match select {
+                                    0 => {
+                                        select = 0;
+                                        vec_labels = asign_labels(vec![format!("HARDWARE CHECK"),format!("HOUR"),format!("WEATHER"),format!("CONFIG"),"LEAVE".to_string()],terminal_x as i32,terminal_y as i32);
+                                        select_labels = define_select_labels(&vec_labels);
+                                        menu_location = "menu";
+                                        // 
+                                        window_label = label_window(&window_map,select,&vec_labels,&select_labels,terminal_x,terminal_y);
+                                        print_gui(&window_label,terminal_x,terminal_y);
+                                    },
+                                    _ => {},
+
+                            }
                             "hardware_menu" => match select {
                                     0 => {
                                         select = 0;
@@ -131,7 +153,7 @@ fn main() -> io::Result<()> {
                                         select_labels = define_select_labels(&vec_labels);
                                         menu_location = "menu";
                                         // 
-                                        window_label = label_window(&mut window_label,select,&vec_labels,&select_labels,terminal_x,terminal_y);
+                                        window_label = label_window(&window_map,select,&vec_labels,&select_labels,terminal_x,terminal_y);
                                         print_gui(&window_label,terminal_x,terminal_y);
                                     },
                                     _ => {},
@@ -147,7 +169,7 @@ fn main() -> io::Result<()> {
                                         select_labels = define_select_labels(&vec_labels);
                                         menu_location = "menu";
                                         // 
-                                        window_label = label_window(&mut window_label,select,&vec_labels,&select_labels,terminal_x,terminal_y);
+                                        window_label = label_window(&window_map,select,&vec_labels,&select_labels,terminal_x,terminal_y);
                                         print_gui(&window_label,terminal_x,terminal_y);
                                     },
                                     _ => {},
@@ -160,6 +182,39 @@ fn main() -> io::Result<()> {
             }
             _ => {}
         }
+    }
+    Ok(())
+}
+
+fn hardware_menu(window_map: &Vec<Vec<String>>, terminal_x: u16,terminal_y: u16) -> io::Result<()> {
+    
+    // Clon of window_map for not touch the main window_label.
+    let mut window_label_hardware = window_map.clone();
+
+    let select_hardware = 0;
+
+    let vec_label_hardware = vec![
+        create_label(&String::from("Hardware Check"), Some(&5), Some(&5), Some(LabelType::Text),Some(LabelStyle::Text)),
+        create_label(&String::from("Leave"), Some(&5), Some(&5), Some(LabelType::Select), Some(LabelStyle::Edges))
+    ];
+    let vec_label_hardware_select = define_select_labels(&vec_label_hardware);
+
+    window_label_hardware = label_window(&window_label_hardware,select_hardware, &vec_label_hardware,&vec_label_hardware_select,terminal_x,terminal_y);
+
+
+    loop {
+        if crossterm::event::poll(std::time::Duration::from_secs(0))? {
+            if let crossterm::event::Event::Key(key) = crossterm::event::read()? {
+                match key.code {
+                    crossterm::event::KeyCode::Char('q') => break,
+                    _ => {},
+                }
+            }
+        }
+
+        // add_label_to_window(&mut window_label_hardware, terminal_x, terminal_y);
+
+        print_gui(&window_label_hardware,terminal_x,terminal_y);
     }
     Ok(())
 }
@@ -236,7 +291,105 @@ fn define_select_labels (vec_label: &Vec<Label>) -> Vec<&Label> {
     labels_temp
 }
 
-fn label_window(window_label: &mut Vec<Vec<String>>,select: i16,vec_labels: &Vec<Label>,select_labels: &Vec<&Label>,terminal_x: u16,terminal_y: u16) -> Vec<Vec<String>> {
+fn add_label_to_window(window_label: &mut Vec<Vec<String>>,label: Label) {
+
+    // Esta funcion debe de añadir un label al window_label cuando es llamado,
+    // debe respetar las funciones que tiene label_window pero de forma individual
+    //
+    // A DESTACAR: Es para poner cosas de informacion, ya que no respeta el sistema
+    // de vectores que utiliza los labels comunes, asi que no se debe usar co select
+    // !!!
+
+    let text_size = label.text.len();
+    let impar = if text_size % 2 == 0 { 0 } else { 1 };
+    let text_size = if text_size != 1 { if (text_size % 2) == 0 { text_size / 2 } else { (text_size + 1) / 2 } } else { 1 };
+    let color = "";
+    let color2 = "";
+        
+    match label.style {
+            LabelStyle::Border => {
+                for i in 0..(label.text.len() + 6) {
+                    if i == 0 {
+                        window_label[(label.pos_y + 2) as usize][(label.pos_x - 3 + i as u16) as usize] = format!("{}└{}",color,RESET);
+                    } else if i == (label.text.len() + 5) {
+                        window_label[(label.pos_y + 2) as usize][(label.pos_x - 3 + i as u16) as usize] = format!("{}┘{}",color,RESET);
+                    } else {
+                        window_label[(label.pos_y + 2) as usize][(label.pos_x - 3 + i as u16) as usize] = format!("{}─{}",color,RESET);
+                    }
+                }
+                for i in 0..(label.text.len() + 6) {
+                    if i == 0 {
+                        window_label[(label.pos_y - 2) as usize][(label.pos_x - 3 + i as u16) as usize] = format!("{}┌{}",color,RESET);
+                    } else if i == (label.text.len() + 5) {
+                        window_label[(label.pos_y - 2) as usize][(label.pos_x - 3 + i as u16) as usize] = format!("{}┐{}",color,RESET);
+                    } else {
+                        window_label[(label.pos_y - 2) as usize][(label.pos_x - 3 + i as u16) as usize] = format!("{}─{}",color,RESET);
+                    }
+                }
+                for i in 0..3 {
+                    window_label[(label.pos_y - 1 + i as u16) as usize][(label.pos_x - 3) as usize] = format!("{}│{}",color,RESET);
+                }
+                for i in 0..3 {
+                    window_label[(label.pos_y - 1 + i as u16) as usize][(label.pos_x + (text_size as u16 * 2) + 2 - impar) as usize] = format!("{}│{}",color,RESET);
+                }
+            },
+            LabelStyle::DobleBorder  => {
+                for i in 0..(label.text.len() + 6) {
+                    if i == 0 {
+                        window_label[(label.pos_y + 2) as usize][(label.pos_x - 3 + i as u16) as usize] = format!("{}╚{}",color,RESET);
+                    } else if i == (label.text.len() + 5) {
+                        window_label[(label.pos_y + 2) as usize][(label.pos_x - 3 + i as u16) as usize] = format!("{}╝{}",color,RESET);
+                    } else {
+                        window_label[(label.pos_y + 2) as usize][(label.pos_x - 3 + i as u16) as usize] = format!("{}═{}",color,RESET);
+                    }
+                }
+                for i in 0..(label.text.len() + 6) {
+                    if i == 0 {
+                        window_label[(label.pos_y - 2) as usize][(label.pos_x - 3 + i as u16) as usize] = format!("{}╔{}",color,RESET);
+                    } else if i == (label.text.len() + 5) {
+                        window_label[(label.pos_y - 2) as usize][(label.pos_x - 3 + i as u16) as usize] = format!("{}╗{}",color,RESET);
+                    } else {
+                        window_label[(label.pos_y - 2) as usize][(label.pos_x - 3 + i as u16) as usize] = format!("{}═{}",color,RESET);
+                    }
+                }
+                for i in 0..3 {
+                    window_label[(label.pos_y - 1 + i as u16) as usize][(label.pos_x - 3) as usize] = format!("{}║{}",color,RESET);
+                }
+                for i in 0..3 {
+                    window_label[(label.pos_y - 1 + i as u16) as usize][(label.pos_x + (text_size as u16 * 2) + 2 - impar) as usize] = format!("{}║{}",color,RESET);
+                }
+            },
+            LabelStyle::BottomBorder => {
+                for i in 0..(label.text.len() + 2) {
+                    if i == 0 {
+                        window_label[(label.pos_y + 1) as usize][(label.pos_x - 1 + i as u16) as usize] = format!("{}←{}",color,RESET);
+                    } else if i == (label.text.len() + 1) {
+                        window_label[(label.pos_y + 1) as usize][(label.pos_x - 1 + i as u16) as usize] = format!("{}→{}",color,RESET);
+                    } else {
+                        window_label[(label.pos_y + 1) as usize][(label.pos_x - 1 + i as u16) as usize] = format!("{}─{}",color,RESET);
+                    }
+                }
+            },
+            LabelStyle::Edges => {
+                window_label[(label.pos_y - 1) as usize][(label.pos_x - 2) as usize] = format!("{}┌{}",color,RESET);
+                window_label[(label.pos_y - 1) as usize][(label.pos_x + (text_size as u16 * 2)) as usize] = format!("{}┐{}",color,RESET);
+                window_label[(label.pos_y + 1) as usize][(label.pos_x - 2) as usize] = format!("{}└{}",color,RESET);
+                window_label[(label.pos_y + 1) as usize][(label.pos_x + (text_size as u16 * 2)) as usize] = format!("{}┘{}",color,RESET);
+
+            },
+            LabelStyle::Text => {}
+        }
+        
+        for (i, c) in label.text.chars().enumerate() {
+            window_label[label.pos_y as usize][label.pos_x as usize + i as usize] = c.to_string();
+        }
+}
+
+fn label_window(window_map: &Vec<Vec<String>>,select: i16,vec_labels: &Vec<Label>,select_labels: &Vec<&Label>,terminal_x: u16,terminal_y: u16) -> Vec<Vec<String>> {
+
+
+    // ESTA FUNCION SOLO SIRVE PARA CUANDO CAMBIAN LOS LABELS, SOLO SE USA CUANDO SE ACTUALIZA LA
+    // LISTA DE VEC_LABELS.
 
     // ACA SE ASIGNA al window_label el cual se imprime al final, donde las posiciones de los labels se escriben
     // sobre el mapa original, es decir, fuciona los labels con el mapeo de la terminal(tamaño y esquinas).
@@ -249,6 +402,8 @@ fn label_window(window_label: &mut Vec<Vec<String>>,select: i16,vec_labels: &Vec
     
     //  Se cambio de map_window aca para asignar automaticamente y no tener que usar muchos if.
     //  - SOLO por debug, se puede quitar si se desea ya que va a relentizar por la cantidad de if.
+    
+    let mut window_label = window_map.clone();
     
     window_label[(terminal_y-2) as usize][2 as usize] = format!("{}",select);
     window_label[(terminal_y-2) as usize][4 as usize] = String::from("|");
@@ -355,7 +510,7 @@ fn label_window(window_label: &mut Vec<Vec<String>>,select: i16,vec_labels: &Vec
     }
     // print_gui(window_label,terminal_x,terminal_y)
     
-    return window_label.to_vec();
+    window_label
 }
 
 // |--------------- LABELS ---------------|
