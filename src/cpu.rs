@@ -5,12 +5,13 @@ struct CpuCoreInfo {
     hertz: u16,
 }
 
-pub fn cpu_info() -> String {
+pub fn cpu_info(height: u16) -> String {
     // Funcion para obtener la info del cpu que requiere hardware_menu
     
     // Cantidad procesadores
     let mut core_num: u16 = 0;
     let mut text = String::new();
+    let mut cores_average: Vec<f32> = Vec::new();
 
     if let Ok(cpuinfo) = fs::read_to_string("/proc/cpuinfo") {
         for line in cpuinfo.lines() {
@@ -41,18 +42,158 @@ pub fn cpu_info() -> String {
 
                 };
 
-                // Finally we need the average mhz 
-                let hz_percentage = (hz_actual * 100.0) / hz_max;
-                text = hz_percentage.to_string();
-
-
-                // text = hz_numbers.to_string();
+                // Finally we need the average mhz, and push it
+                cores_average.push((hz_actual * 100.0) / hz_max);
             }
-
         }
     }
-    //
-    // text = hz_max.to_string();
+
+    for _i2 in 0..cores_average.len() {
+        text += &format!("{} ",cores_average[_i2] as u16);
+    }
+    text += &'\n'.to_string();
+    for i in 0..height {
+
+        for _i2 in 0..cores_average.len() {
+            let height_percent: f32 = 100.0 - (( i as f32 / height as f32) * 100.0);
+
+            if height_percent - cores_average[_i2] > 3.0 {
+                text +=  &"░░".to_string();
+            } else if height_percent - cores_average[_i2] > 1.0 {
+                text +=  &"▒▒".to_string();
+            } else {
+                text += &"██".to_string();
+
+            }
+            text += &" ".to_string();
+
+        } 
+        text += &'\n'.to_string();
+    }
+
+    for i in 0..cores_average.len() {
+        text += &format!("C{} ",i);
+    }
 
     text
+}
+
+pub fn clock(time: u16) -> String {
+    let mut clock: String = String::new();
+    match time {
+        1 => clock = r#"
+         .--.
+    .-._;.--.;_.-.
+   (_.'_..--.._'._)
+    /.' . 60 . '.\
+   // .   ||   . \\
+  |; .    ||    . |;
+  ||45    ()    15||
+  |; .          . |;
+   \\ .        . //
+    \'._' 30 '_.'/
+     '-._'--'_.-'
+         `""`
+"#.to_string(),     
+        2 => clock = r#"
+         .--.
+    .-._;.--.;_.-.
+   (_.'_..--.._'._)
+    /.' . 60 . '.\
+   // .      / . \\
+  |; .      /   . |;
+  ||45    ()    15||
+  |; .          . |;
+   \\ .        . //
+    \'._' 30 '_.'/
+     '-._'--'_.-'
+         `""`
+"#.to_string(),
+        3 => clock = r#"
+         .--.
+    .-._;.--.;_.-.
+   (_.'_..--.._'._)
+    /.' . 60 . '.\
+   // .        . \\
+  |; .          . |;
+  ||45    ()====15||
+  |; .          . |;
+   \\ .        . //
+    \'._' 30 '_.'/
+     '-._'--'_.-'
+         `""`
+"#.to_string(),
+        4 => clock = r#"
+         .--.
+    .-._;.--.;_.-.
+   (_.'_..--.._'._)
+    /.' . 60 . '.\
+   // .        . \\
+  |; .          . |;
+  ||45    ()    15||
+  |; .      \   . |;
+   \\ .      \ . //
+    \'._' 30 '_.'/
+     '-._'--'_.-'
+         `""`
+"#.to_string(),
+        5 => clock = r#"
+         .--.
+    .-._;.--.;_.-.
+   (_.'_..--.._'._)
+    /.' . 60 . '.\
+   // .        . \\
+  |; .          . |;
+  ||45    ()    15||
+  |; .    ||    . |;
+   \\ .   ||   . //
+    \'._' 30 '_.'/
+     '-._'--'_.-'
+         `""`
+"#.to_string(),
+        6 => clock = r#"
+         .--.
+    .-._;.--.;_.-.
+   (_.'_..--.._'._)
+    /.' . 60 . '.\
+   // .        . \\
+  |; .          . |;
+  ||45    ()    15||
+  |; .   /      . |;
+   \\ . /      . //
+    \'._' 30 '_.'/
+     '-._'--'_.-'
+         `""`
+"#.to_string(),
+        7 => clock = r#"
+         .--.
+    .-._;.--.;_.-.
+   (_.'_..--.._'._)
+    /.' . 60 . '.\
+   // .        . \\
+  |; .          . |;
+  ||45====()    15||
+  |; .          . |;
+   \\ .        . //
+    \'._' 30 '_.'/
+     '-._'--'_.-'
+         `""`
+"#.to_string(),
+        8 => clock = r#"
+         .--.
+    .-._;.--.;_.-.
+   (_.'_..--.._'._)
+    /.' . 60 . '.\
+   // . \      . \\
+  |; .   \      . |;
+  ||45    ()    15||
+  |; .          . |;
+   \\ .        . //
+    \'._' 30 '_.'/
+     '-._'--'_.-'
+         `""`
+"#.to_string(),
+        _ => {}
+    }
+    clock
 }

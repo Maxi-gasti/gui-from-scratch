@@ -208,8 +208,9 @@ fn hardware_menu(window_map: &Vec<Vec<String>>, terminal_x: u16,terminal_y: u16)
     window_label_hardware = label_window(&window_label_hardware,select_hardware, &vec_label_hardware,&vec_label_hardware_select,terminal_x,terminal_y);
 
 
+    let mut clock_time: u16 = 1;  
     loop {
-        if crossterm::event::poll(std::time::Duration::from_millis(300))? {
+        if crossterm::event::poll(std::time::Duration::from_millis(50))? {
             if let crossterm::event::Event::Key(key) = crossterm::event::read()? {
                 match key.code {
                     crossterm::event::KeyCode::Char('q') => break,
@@ -223,18 +224,36 @@ fn hardware_menu(window_map: &Vec<Vec<String>>, terminal_x: u16,terminal_y: u16)
 
         gui::print_gui(&window_label_hardware,terminal_x,terminal_y);
         add_label_to_window(&mut window_label_hardware, create_label(
-               &cpu::cpu_info(),
+               &cpu::cpu_info(true_y / 5),
                 Some(&{
                     let x = (true_x as f32 / 100.0) as f32 * 70.0;
                     x as i32 + 1
                 }),
                 Some(&{
-                    let y = (true_y as f32 / 100.0) as f32 * 50.0;
+                    let y = (true_y as f32 / 100.0) as f32 * 5.0;
                     y as i32 + 1
                 }),
-                Some(models::LabelType::Line),
+                Some(models::LabelType::Text),
                 Some(models::LabelStyle::Text)
         ));
+        add_label_to_window(&mut window_label_hardware, create_label(
+               &cpu::clock(clock_time),
+                Some(&{
+                    let x = (true_x as f32 / 100.0) as f32 * 55.0;
+                    x as i32 + 1
+                }),
+                Some(&{
+                    let y = (true_y as f32 / 100.0) as f32 * 5.0;
+                    y as i32 + 1
+                }),
+                Some(models::LabelType::Text),
+                Some(models::LabelStyle::Text)
+        ));
+        if clock_time+1 >= 9 {
+            clock_time = 1;
+        } else {
+            clock_time += 1;
+        }
     }
     Ok(())
 }
@@ -300,89 +319,128 @@ fn add_label_to_window(window_label: &mut Vec<Vec<String>>,label: models::Label)
     // de vectores que utiliza los labels comunes, asi que no se debe usar con select
     // !!!
 
-    let text_size = label.text.len();
+    let text_size: u16 = {
+        if label.label_type == models::LabelType::Line {
+            label.text.len() as u16
+        } else {
+            let mut count = 0;
+            let mut letters: u16 = 0;
+            let bytes = label.text.as_bytes();
+
+           for (_i, &item) in bytes.iter().enumerate() {
+                count += 1;
+                if item != b'\n' {
+                    if count > letters {
+                        letters = count;
+                    }
+                } else {
+                    count = 0;
+                }
+            };
+           letters
+        }
+    };
     let impar = if text_size % 2 == 0 { 0 } else { 1 };
     let text_size = if text_size != 1 { if (text_size % 2) == 0 { text_size / 2 } else { (text_size + 1) / 2 } } else { 1 };
     let color = "";
     let color2 = "";
-        
-    match label.style {
-            models::LabelStyle::Border => {
-                for i in 0..(label.text.len() + 6) {
-                    if i == 0 {
-                        window_label[(label.pos_y + 2) as usize][(label.pos_x - 3 + i as u16) as usize] = format!("{}└{}",color,RESET);
-                    } else if i == (label.text.len() + 5) {
-                        window_label[(label.pos_y + 2) as usize][(label.pos_x - 3 + i as u16) as usize] = format!("{}┘{}",color,RESET);
-                    } else {
-                        window_label[(label.pos_y + 2) as usize][(label.pos_x - 3 + i as u16) as usize] = format!("{}─{}",color,RESET);
-                    }
-                }
-                for i in 0..(label.text.len() + 6) {
-                    if i == 0 {
-                        window_label[(label.pos_y - 2) as usize][(label.pos_x - 3 + i as u16) as usize] = format!("{}┌{}",color,RESET);
-                    } else if i == (label.text.len() + 5) {
-                        window_label[(label.pos_y - 2) as usize][(label.pos_x - 3 + i as u16) as usize] = format!("{}┐{}",color,RESET);
-                    } else {
-                        window_label[(label.pos_y - 2) as usize][(label.pos_x - 3 + i as u16) as usize] = format!("{}─{}",color,RESET);
-                    }
-                }
-                for i in 0..3 {
-                    window_label[(label.pos_y - 1 + i as u16) as usize][(label.pos_x - 3) as usize] = format!("{}│{}",color,RESET);
-                }
-                for i in 0..3 {
-                    window_label[(label.pos_y - 1 + i as u16) as usize][(label.pos_x + (text_size as u16 * 2) + 2 - impar) as usize] = format!("{}│{}",color,RESET);
-                }
-            },
-            models::LabelStyle::DobleBorder  => {
-                for i in 0..(label.text.len() + 6) {
-                    if i == 0 {
-                        window_label[(label.pos_y + 2) as usize][(label.pos_x - 3 + i as u16) as usize] = format!("{}╚{}",color,RESET);
-                    } else if i == (label.text.len() + 5) {
-                        window_label[(label.pos_y + 2) as usize][(label.pos_x - 3 + i as u16) as usize] = format!("{}╝{}",color,RESET);
-                    } else {
-                        window_label[(label.pos_y + 2) as usize][(label.pos_x - 3 + i as u16) as usize] = format!("{}═{}",color,RESET);
-                    }
-                }
-                for i in 0..(label.text.len() + 6) {
-                    if i == 0 {
-                        window_label[(label.pos_y - 2) as usize][(label.pos_x - 3 + i as u16) as usize] = format!("{}╔{}",color,RESET);
-                    } else if i == (label.text.len() + 5) {
-                        window_label[(label.pos_y - 2) as usize][(label.pos_x - 3 + i as u16) as usize] = format!("{}╗{}",color,RESET);
-                    } else {
-                        window_label[(label.pos_y - 2) as usize][(label.pos_x - 3 + i as u16) as usize] = format!("{}═{}",color,RESET);
-                    }
-                }
-                for i in 0..3 {
-                    window_label[(label.pos_y - 1 + i as u16) as usize][(label.pos_x - 3) as usize] = format!("{}║{}",color,RESET);
-                }
-                for i in 0..3 {
-                    window_label[(label.pos_y - 1 + i as u16) as usize][(label.pos_x + (text_size as u16 * 2) + 2 - impar) as usize] = format!("{}║{}",color,RESET);
-                }
-            },
-            models::LabelStyle::BottomBorder => {
-                for i in 0..(label.text.len() + 2) {
-                    if i == 0 {
-                        window_label[(label.pos_y + 1) as usize][(label.pos_x - 1 + i as u16) as usize] = format!("{}←{}",color,RESET);
-                    } else if i == (label.text.len() + 1) {
-                        window_label[(label.pos_y + 1) as usize][(label.pos_x - 1 + i as u16) as usize] = format!("{}→{}",color,RESET);
-                    } else {
-                        window_label[(label.pos_y + 1) as usize][(label.pos_x - 1 + i as u16) as usize] = format!("{}─{}",color,RESET);
-                    }
-                }
-            },
-            models::LabelStyle::Edges => {
-                window_label[(label.pos_y - 1) as usize][(label.pos_x - 2) as usize] = format!("{}┌{}",color,RESET);
-                window_label[(label.pos_y - 1) as usize][(label.pos_x + (text_size as u16 * 2)) as usize] = format!("{}┐{}",color,RESET);
-                window_label[(label.pos_y + 1) as usize][(label.pos_x - 2) as usize] = format!("{}└{}",color,RESET);
-                window_label[(label.pos_y + 1) as usize][(label.pos_x + (text_size as u16 * 2)) as usize] = format!("{}┘{}",color,RESET);
+    
+    match label.label_type {
+        models::LabelType::Text => {
+            
+            let mut count_y: u16 = 0;
+            let mut count_x: i32 = 0;
 
-            },
-            models::LabelStyle::Text => {}
-        }
-        
-        for (i, c) in label.text.chars().enumerate() {
-            window_label[label.pos_y as usize][label.pos_x as usize + i as usize] = c.to_string();
-        }
+            for (_i, c) in label.text.chars().enumerate() {
+                if c == '\n' {
+                    count_y += 1;
+                    count_x = -1;
+                } else {
+                    window_label[(label.pos_y + count_y) as usize][(label.pos_x + count_x as u16) as usize] = c.to_string();
+                }
+                count_x += 1;
+            }
+
+        },
+        models::LabelType::Line | models::LabelType::Select => {
+            match label.style {
+                models::LabelStyle::Border => {
+                    for i in 0..(label.text.len() + 6) {
+                        if i == 0 {
+                            window_label[(label.pos_y + 2) as usize][(label.pos_x - 3) as usize] = format!("{}└{}",color,RESET);
+                        } else if i == (label.text.len() + 5) {
+                            window_label[(label.pos_y + 2) as usize][(label.pos_x - 3 + i as u16) as usize] = format!("{}┘{}",color,RESET);
+                        } else {
+                            window_label[(label.pos_y + 2) as usize][(label.pos_x - 3 + i as u16) as usize] = format!("{}─{}",color,RESET);
+                        }
+                    }
+                    for i in 0..(label.text.len() + 6) {
+                        if i == 0 {
+                            window_label[(label.pos_y - 2) as usize][(label.pos_x - 3 + i as u16) as usize] = format!("{}┌{}",color,RESET);
+                        } else if i == (label.text.len() + 5) {
+                            window_label[(label.pos_y - 2) as usize][(label.pos_x - 3 + i as u16) as usize] = format!("{}┐{}",color,RESET);
+                        } else {
+                            window_label[(label.pos_y - 2) as usize][(label.pos_x - 3 + i as u16) as usize] = format!("{}─{}",color,RESET);
+                        }
+                    }
+                    for i in 0..3 {
+                        window_label[(label.pos_y - 1 + i as u16) as usize][(label.pos_x - 3) as usize] = format!("{}│{}",color,RESET);
+                    }
+                    for i in 0..3 {
+                        window_label[(label.pos_y - 1 + i as u16) as usize][(label.pos_x + (text_size as u16 * 2) + 2 - impar) as usize] = format!("{}│{}",color,RESET);
+                    }
+                },
+                models::LabelStyle::DobleBorder  => {
+                    for i in 0..(label.text.len() + 6) {
+                        if i == 0 {
+                            window_label[(label.pos_y + 2) as usize][(label.pos_x - 3 + i as u16) as usize] = format!("{}╚{}",color,RESET);
+                        } else if i == (label.text.len() + 5) {
+                            window_label[(label.pos_y + 2) as usize][(label.pos_x - 3 + i as u16) as usize] = format!("{}╝{}",color,RESET);
+                        } else {
+                            window_label[(label.pos_y + 2) as usize][(label.pos_x - 3 + i as u16) as usize] = format!("{}═{}",color,RESET);
+                        }
+                    }
+                    for i in 0..(label.text.len() + 6) {
+                        if i == 0 {
+                            window_label[(label.pos_y - 2) as usize][(label.pos_x - 3 + i as u16) as usize] = format!("{}╔{}",color,RESET);
+                        } else if i == (label.text.len() + 5) {
+                            window_label[(label.pos_y - 2) as usize][(label.pos_x - 3 + i as u16) as usize] = format!("{}╗{}",color,RESET);
+                        } else {
+                            window_label[(label.pos_y - 2) as usize][(label.pos_x - 3 + i as u16) as usize] = format!("{}═{}",color,RESET);
+                        }
+                    }
+                    for i in 0..3 {
+                        window_label[(label.pos_y - 1 + i as u16) as usize][(label.pos_x - 3) as usize] = format!("{}║{}",color,RESET);
+                    }
+                    for i in 0..3 {
+                        window_label[(label.pos_y - 1 + i as u16) as usize][(label.pos_x + (text_size as u16 * 2) + 2 - impar) as usize] = format!("{}║{}",color,RESET);
+                    }
+                },
+                models::LabelStyle::BottomBorder => {
+                    for i in 0..(label.text.len() + 2) {
+                        if i == 0 {
+                            window_label[(label.pos_y + 1) as usize][(label.pos_x - 1 + i as u16) as usize] = format!("{}←{}",color,RESET);
+                        } else if i == (label.text.len() + 1) {
+                            window_label[(label.pos_y + 1) as usize][(label.pos_x - 1 + i as u16) as usize] = format!("{}→{}",color,RESET);
+                        } else {
+                            window_label[(label.pos_y + 1) as usize][(label.pos_x - 1 + i as u16) as usize] = format!("{}─{}",color,RESET);
+                        }
+                    }
+                },
+                models::LabelStyle::Edges => {
+                    window_label[(label.pos_y - 1) as usize][(label.pos_x - 2) as usize] = format!("{}┌{}",color,RESET);
+                    window_label[(label.pos_y - 1) as usize][(label.pos_x + (text_size as u16 * 2)) as usize] = format!("{}┐{}",color,RESET);
+                    window_label[(label.pos_y + 1) as usize][(label.pos_x - 2) as usize] = format!("{}└{}",color,RESET);
+                    window_label[(label.pos_y + 1) as usize][(label.pos_x + (text_size as u16 * 2)) as usize] = format!("{}┘{}",color,RESET);
+                },
+                models::LabelStyle::Text => {}
+            }
+            for (i, c) in label.text.chars().enumerate() {
+                window_label[label.pos_y as usize][label.pos_x as usize + i as usize] = c.to_string();
+            }
+        },
+        _ => { print!("ERROR: NINGUN LABELTYPE ENCONTRADO.");}
+    }
 }
 
 fn label_window(window_map: &Vec<Vec<String>>,select: i16,vec_labels: &Vec<models::Label>,select_labels: &Vec<&models::Label>,terminal_x: u16,terminal_y: u16) -> Vec<Vec<String>> {
