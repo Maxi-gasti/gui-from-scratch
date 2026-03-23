@@ -1,36 +1,15 @@
+pub mod models;
+pub mod cpu;
+pub mod gui;
 use crossterm::terminal::size;
 use std::io;
+// use std::fs;
 
 const BLACK: &str = "\x1b[90m";
 const GREEN: &str = "\x1b[32m";
 const YELLOW2: &str = "\x1b[4;1;33m";
 const YELLOW: &str = "\x1b[1;33m";
 const RESET: &str = "\x1b[0m";
-
-#[derive(Debug,PartialEq)]
-enum LabelType {
-    Select,
-    Text,
-}
-
-#[derive(Debug,PartialEq)]
-enum LabelStyle {
-    Border,
-    DobleBorder,
-    BottomBorder,
-    Edges,
-    Text,
-}
-
-#[derive(Debug)]
-struct Label {
-    text: String,
-    label_type: LabelType,
-    style: LabelStyle,
-    pos_x: u16,
-    pos_y: u16,
-}
-
 
 fn main() -> io::Result<()> {
 
@@ -53,7 +32,7 @@ fn main() -> io::Result<()> {
     // it with something like 1920x1020 lol.
     let mut window_label: Vec<Vec<String>> = window_map.clone();
     window_label = label_window(&window_map,select,&vec_labels,&select_labels,terminal_x,terminal_y);
-    print_gui(&window_label,terminal_x,terminal_y);
+    gui::print_gui(&window_label,terminal_x,terminal_y);
 
     // label_window(&window_map,select,&vec_labels,&select_labels,terminal_x,terminal_y);
     
@@ -68,7 +47,7 @@ fn main() -> io::Result<()> {
                 select_labels = define_select_labels(&vec_labels);
                 // 
                 window_label = label_window(&window_map,select,&vec_labels,&select_labels,terminal_x,terminal_y);
-                print_gui(&window_label,terminal_x,terminal_y);
+                gui::print_gui(&window_label,terminal_x,terminal_y);
             },
             crossterm::event::Event::Key(crossterm::event::KeyEvent {code, ..} ) => { // DESEMPAQUETA EL STRUCT Keyevent y sacas el code que seria un keycode
                 match code {
@@ -77,13 +56,13 @@ fn main() -> io::Result<()> {
                         if (select-1) >= 0 as i16 {select -= 1}
                         // 
                         window_label = label_window(&window_map,select,&vec_labels,&select_labels,terminal_x,terminal_y);
-                        print_gui(&window_label,terminal_x,terminal_y);
+                        gui::print_gui(&window_label,terminal_x,terminal_y);
                     },
                     crossterm::event::KeyCode::Char('s') | crossterm::event::KeyCode::Down => {
                         if (select+1) <= (select_labels.iter().len() as i16 - 1) { select += 1}
                         // 
                         window_label = label_window(&window_map,select,&vec_labels,&select_labels,terminal_x,terminal_y);
-                        print_gui(&window_label,terminal_x,terminal_y);
+                        gui::print_gui(&window_label,terminal_x,terminal_y);
                     },
 
                     // aca las views de los labels
@@ -96,7 +75,7 @@ fn main() -> io::Result<()> {
                                         // ACA UN MENU GUI!
                                         
                                         hardware_menu(&window_map,terminal_x,terminal_y);
-                                        print_gui(&window_label,terminal_x,terminal_y);
+                                        gui::print_gui(&window_label,terminal_x,terminal_y);
 
                                     },
                                     1 => {},
@@ -104,17 +83,17 @@ fn main() -> io::Result<()> {
                                         select = 0;
                                         menu_location = "styles_menu";
                                         vec_labels = vec![
-                                            create_label(&String::from("TEXT"), Some(&40), Some(&4), Some(LabelType::Text),Some(LabelStyle::Text)),
-                                            create_label(&String::from("BORDER"), Some(&40), Some(&10), Some(LabelType::Text), Some(LabelStyle::Border)),
-                                            create_label(&String::from("DOBLE_BORDER"), Some(&70), Some(&4), Some(LabelType::Text),Some(LabelStyle::DobleBorder)),
-                                            create_label(&String::from("BOTTOM_BORDER"), Some(&70), Some(&10), Some(LabelType::Text),Some(LabelStyle::BottomBorder)),
-                                            create_label(&String::from("EDGES"), Some(&100), Some(&4), Some(LabelType::Text),Some(LabelStyle::Edges)),
-                                            create_label(&String::from("Return to menu"), Some(&10),Some(&(terminal_y as i32 -10)),Some(LabelType::Select),Some(LabelStyle::BottomBorder))
+                                            create_label(&String::from("TEXT"), Some(&40), Some(&4), Some(models::LabelType::Line),Some(models::LabelStyle::Text)),
+                                            create_label(&String::from("BORDER"), Some(&40), Some(&10), Some(models::LabelType::Line), Some(models::LabelStyle::Border)),
+                                            create_label(&String::from("DOBLE_BORDER"), Some(&70), Some(&4), Some(models::LabelType::Line),Some(models::LabelStyle::DobleBorder)),
+                                            create_label(&String::from("BOTTOM_BORDER"), Some(&70), Some(&10), Some(models::LabelType::Line),Some(models::LabelStyle::BottomBorder)),
+                                            create_label(&String::from("EDGES"), Some(&100), Some(&4), Some(models::LabelType::Line),Some(models::LabelStyle::Edges)),
+                                            create_label(&String::from("Return to menu"), Some(&10),Some(&(terminal_y as i32 -10)),Some(models::LabelType::Select),Some(models::LabelStyle::BottomBorder))
                                         ];
                                         select_labels = define_select_labels(&vec_labels);
                                         window_label = label_window(&window_map,select,&vec_labels,&select_labels,terminal_x,terminal_y);
                                         //
-                                        print_gui(&window_label,terminal_x,terminal_y);
+                                        gui::print_gui(&window_label,terminal_x,terminal_y);
                                     },
                                     3 => {
                                         select = 0;
@@ -126,9 +105,9 @@ fn main() -> io::Result<()> {
                                         select_labels = define_select_labels(&vec_labels);
                                         // 
                                         window_label = label_window(&window_map,select,&vec_labels,&select_labels,terminal_x,terminal_y);
-                                        print_gui(&window_label,terminal_x,terminal_y);
+                                        gui::print_gui(&window_label,terminal_x,terminal_y);
                                     },
-                                    4 => { clear_terminal(); break},
+                                    4 => { gui::clear_terminal(); break},
                                     _ => {},
                                 },
 
@@ -141,7 +120,7 @@ fn main() -> io::Result<()> {
                                         menu_location = "menu";
                                         // 
                                         window_label = label_window(&window_map,select,&vec_labels,&select_labels,terminal_x,terminal_y);
-                                        print_gui(&window_label,terminal_x,terminal_y);
+                                        gui::print_gui(&window_label,terminal_x,terminal_y);
                                     },
                                     _ => {},
 
@@ -154,7 +133,7 @@ fn main() -> io::Result<()> {
                                         menu_location = "menu";
                                         // 
                                         window_label = label_window(&window_map,select,&vec_labels,&select_labels,terminal_x,terminal_y);
-                                        print_gui(&window_label,terminal_x,terminal_y);
+                                        gui::print_gui(&window_label,terminal_x,terminal_y);
                                     },
                                     _ => {},
 
@@ -170,7 +149,7 @@ fn main() -> io::Result<()> {
                                         menu_location = "menu";
                                         // 
                                         window_label = label_window(&window_map,select,&vec_labels,&select_labels,terminal_x,terminal_y);
-                                        print_gui(&window_label,terminal_x,terminal_y);
+                                        gui::print_gui(&window_label,terminal_x,terminal_y);
                                     },
                                     _ => {},
                                 }
@@ -193,61 +172,79 @@ fn hardware_menu(window_map: &Vec<Vec<String>>, terminal_x: u16,terminal_y: u16)
 
     let select_hardware = 0;
 
+    let true_x = terminal_x - 2;
+    let true_y = terminal_y - 2;
+
     let vec_label_hardware = vec![
-        create_label(&String::from("Hardware Check"), Some(&5), Some(&5), Some(LabelType::Text),Some(LabelStyle::Text)),
-        create_label(&String::from("Leave"), Some(&5), Some(&5), Some(LabelType::Select), Some(LabelStyle::Edges))
+        create_label(
+            &String::from("Hardware Check"), 
+            Some(&{
+                let x = (true_x as f32 / 100.0) as f32 * 3.0;
+                x as i32 + 1
+            }),
+            Some(&{
+                let y = (true_y as f32 / 100.0) as f32 * 5.0;
+                y as i32 + 1
+            }),
+            Some(models::LabelType::Line), 
+            Some(models::LabelStyle::BottomBorder)),
+        create_label(
+            &String::from("Leave"), 
+            Some(&{
+                let x = (true_x as f32 / 100.0) as f32 * 3.0;
+                x as i32 + 1
+            }),
+            Some(&{
+                let y = (true_y as f32 / 100.0) as f32 * 94.0;
+                y as i32 + 1
+            }),
+            Some(models::LabelType::Select), 
+            Some(models::LabelStyle::Edges))
     ];
+
+
     let vec_label_hardware_select = define_select_labels(&vec_label_hardware);
 
     window_label_hardware = label_window(&window_label_hardware,select_hardware, &vec_label_hardware,&vec_label_hardware_select,terminal_x,terminal_y);
 
 
     loop {
-        if crossterm::event::poll(std::time::Duration::from_secs(0))? {
+        if crossterm::event::poll(std::time::Duration::from_millis(300))? {
             if let crossterm::event::Event::Key(key) = crossterm::event::read()? {
                 match key.code {
                     crossterm::event::KeyCode::Char('q') => break,
+                    crossterm::event::KeyCode::Enter => {
+                        break
+                    },
                     _ => {},
                 }
             }
         }
 
-        // add_label_to_window(&mut window_label_hardware, terminal_x, terminal_y);
-
-        print_gui(&window_label_hardware,terminal_x,terminal_y);
+        gui::print_gui(&window_label_hardware,terminal_x,terminal_y);
+        add_label_to_window(&mut window_label_hardware, create_label(
+               &cpu::cpu_info(),
+                Some(&{
+                    let x = (true_x as f32 / 100.0) as f32 * 70.0;
+                    x as i32 + 1
+                }),
+                Some(&{
+                    let y = (true_y as f32 / 100.0) as f32 * 50.0;
+                    y as i32 + 1
+                }),
+                Some(models::LabelType::Line),
+                Some(models::LabelStyle::Text)
+        ));
     }
     Ok(())
-}
-
-fn clear_terminal(){ print!("\x1b[2J\x1b[H"); }
-
-fn print_gui(window_label: &Vec<Vec<String>>, terminal_x: u16, terminal_y: u16) {
-
-        let text = {
-            let mut temp_count = 0;
-            let mut text_temp = String::new();
-
-            while temp_count < terminal_y {
-                let mut temp_iter = window_label[temp_count as usize].iter();
-                let mut temp_2_count = 0;
-                let mut line = String::new();
-                while temp_2_count < terminal_x {
-                    if let Some(value) = temp_iter.next() {  line = line + value; }
-                    temp_2_count += 1;
-                }
-                text_temp = text_temp + &line;
-                temp_count += 1;
-            }
-            text_temp
-        };
-        clear_terminal();
-        print!("{}",text)
 }
 
 
 // |--------------- WINDOW ---------------|
 
 fn map_window(terminal_x: u16, terminal_y: u16) -> Vec<Vec<String>> {
+
+    // Just draw the window in a vector[Y][X].
 
     let mut window_y_temp = Vec::new();
 
@@ -283,21 +280,24 @@ fn map_window(terminal_x: u16, terminal_y: u16) -> Vec<Vec<String>> {
     window_y_temp
 }
 
-fn define_select_labels (vec_label: &Vec<Label>) -> Vec<&Label> {
+fn define_select_labels (vec_label: &Vec<models::Label>) -> Vec<&models::Label> {
+    // This returns a vec with the references of who is LabelType::Select, for 
+    // menu interface.
+    
     let mut labels_temp = Vec::new();
     for label_ in vec_label.iter() {
-        if label_.label_type == LabelType::Select { labels_temp.push(label_); }
+        if label_.label_type == models::LabelType::Select { labels_temp.push(label_); }
     };
     labels_temp
 }
 
-fn add_label_to_window(window_label: &mut Vec<Vec<String>>,label: Label) {
+fn add_label_to_window(window_label: &mut Vec<Vec<String>>,label: models::Label) {
 
     // Esta funcion debe de añadir un label al window_label cuando es llamado,
     // debe respetar las funciones que tiene label_window pero de forma individual
     //
     // A DESTACAR: Es para poner cosas de informacion, ya que no respeta el sistema
-    // de vectores que utiliza los labels comunes, asi que no se debe usar co select
+    // de vectores que utiliza los labels comunes, asi que no se debe usar con select
     // !!!
 
     let text_size = label.text.len();
@@ -307,7 +307,7 @@ fn add_label_to_window(window_label: &mut Vec<Vec<String>>,label: Label) {
     let color2 = "";
         
     match label.style {
-            LabelStyle::Border => {
+            models::LabelStyle::Border => {
                 for i in 0..(label.text.len() + 6) {
                     if i == 0 {
                         window_label[(label.pos_y + 2) as usize][(label.pos_x - 3 + i as u16) as usize] = format!("{}└{}",color,RESET);
@@ -333,7 +333,7 @@ fn add_label_to_window(window_label: &mut Vec<Vec<String>>,label: Label) {
                     window_label[(label.pos_y - 1 + i as u16) as usize][(label.pos_x + (text_size as u16 * 2) + 2 - impar) as usize] = format!("{}│{}",color,RESET);
                 }
             },
-            LabelStyle::DobleBorder  => {
+            models::LabelStyle::DobleBorder  => {
                 for i in 0..(label.text.len() + 6) {
                     if i == 0 {
                         window_label[(label.pos_y + 2) as usize][(label.pos_x - 3 + i as u16) as usize] = format!("{}╚{}",color,RESET);
@@ -359,7 +359,7 @@ fn add_label_to_window(window_label: &mut Vec<Vec<String>>,label: Label) {
                     window_label[(label.pos_y - 1 + i as u16) as usize][(label.pos_x + (text_size as u16 * 2) + 2 - impar) as usize] = format!("{}║{}",color,RESET);
                 }
             },
-            LabelStyle::BottomBorder => {
+            models::LabelStyle::BottomBorder => {
                 for i in 0..(label.text.len() + 2) {
                     if i == 0 {
                         window_label[(label.pos_y + 1) as usize][(label.pos_x - 1 + i as u16) as usize] = format!("{}←{}",color,RESET);
@@ -370,14 +370,14 @@ fn add_label_to_window(window_label: &mut Vec<Vec<String>>,label: Label) {
                     }
                 }
             },
-            LabelStyle::Edges => {
+            models::LabelStyle::Edges => {
                 window_label[(label.pos_y - 1) as usize][(label.pos_x - 2) as usize] = format!("{}┌{}",color,RESET);
                 window_label[(label.pos_y - 1) as usize][(label.pos_x + (text_size as u16 * 2)) as usize] = format!("{}┐{}",color,RESET);
                 window_label[(label.pos_y + 1) as usize][(label.pos_x - 2) as usize] = format!("{}└{}",color,RESET);
                 window_label[(label.pos_y + 1) as usize][(label.pos_x + (text_size as u16 * 2)) as usize] = format!("{}┘{}",color,RESET);
 
             },
-            LabelStyle::Text => {}
+            models::LabelStyle::Text => {}
         }
         
         for (i, c) in label.text.chars().enumerate() {
@@ -385,23 +385,20 @@ fn add_label_to_window(window_label: &mut Vec<Vec<String>>,label: Label) {
         }
 }
 
-fn label_window(window_map: &Vec<Vec<String>>,select: i16,vec_labels: &Vec<Label>,select_labels: &Vec<&Label>,terminal_x: u16,terminal_y: u16) -> Vec<Vec<String>> {
+fn label_window(window_map: &Vec<Vec<String>>,select: i16,vec_labels: &Vec<models::Label>,select_labels: &Vec<&models::Label>,terminal_x: u16,terminal_y: u16) -> Vec<Vec<String>> {
 
 
     // ESTA FUNCION SOLO SIRVE PARA CUANDO CAMBIAN LOS LABELS, SOLO SE USA CUANDO SE ACTUALIZA LA
     // LISTA DE VEC_LABELS.
+    //
+    // Es decir, el propocito de esta fn es imprimir el menu, no para proporcionar informacion, ya
+    // que no tiene un buffer como el de add_label_to_window() lo que lo hace perfecto para 
+    // enseñar nuevos labels, ya que reinicia completamente el mapeo pero el buffer no.
 
     // ACA SE ASIGNA al window_label el cual se imprime al final, donde las posiciones de los labels se escriben
-    // sobre el mapa original, es decir, fuciona los labels con el mapeo de la terminal(tamaño y esquinas).
+    // sobre el mapa original.
     //
     // Se debe aclarar que aca tambien se customiza los labels con esquinas si el tipo de label lo requiere.
-    
-    // let center_y = (terminal_y - (terminal_y / 20) - 1) / vec_labels.iter().len() as u16;
-    
-    // window_label = window_map.clone();
-    
-    //  Se cambio de map_window aca para asignar automaticamente y no tener que usar muchos if.
-    //  - SOLO por debug, se puede quitar si se desea ya que va a relentizar por la cantidad de if.
     
     let mut window_label = window_map.clone();
     
@@ -423,14 +420,16 @@ fn label_window(window_map: &Vec<Vec<String>>,select: i16,vec_labels: &Vec<Label
         let mut color2 = "";
         
 
-        if label.label_type == LabelType::Select {
+        if label.label_type == models::LabelType::Select {
             for (i, label_) in select_labels.iter().enumerate() {
                 if select == i as i16 && std::ptr::eq(label,*label_) { color = &YELLOW; color2 = &YELLOW2; break }
             }
         }
 
+        // Customize the label.
+
         match label.style {
-            LabelStyle::Border => {
+            models::LabelStyle::Border => {
                 for i in 0..(label.text.len() + 6) {
                     if i == 0 {
                         window_label[(label.pos_y + 2) as usize][(label.pos_x - 3 + i as u16) as usize] = format!("{}└{}",color,RESET);
@@ -456,7 +455,7 @@ fn label_window(window_map: &Vec<Vec<String>>,select: i16,vec_labels: &Vec<Label
                     window_label[(label.pos_y - 1 + i as u16) as usize][(label.pos_x + (text_size as u16 * 2) + 2 - impar) as usize] = format!("{}│{}",color,RESET);
                 }
             },
-            LabelStyle::DobleBorder  => {
+            models::LabelStyle::DobleBorder  => {
                 for i in 0..(label.text.len() + 6) {
                     if i == 0 {
                         window_label[(label.pos_y + 2) as usize][(label.pos_x - 3 + i as u16) as usize] = format!("{}╚{}",color,RESET);
@@ -482,7 +481,7 @@ fn label_window(window_map: &Vec<Vec<String>>,select: i16,vec_labels: &Vec<Label
                     window_label[(label.pos_y - 1 + i as u16) as usize][(label.pos_x + (text_size as u16 * 2) + 2 - impar) as usize] = format!("{}║{}",color,RESET);
                 }
             },
-            LabelStyle::BottomBorder => {
+            models::LabelStyle::BottomBorder => {
                 for i in 0..(label.text.len() + 2) {
                     if i == 0 {
                         window_label[(label.pos_y + 1) as usize][(label.pos_x - 1 + i as u16) as usize] = format!("{}←{}",color,RESET);
@@ -493,14 +492,14 @@ fn label_window(window_map: &Vec<Vec<String>>,select: i16,vec_labels: &Vec<Label
                     }
                 }
             },
-            LabelStyle::Edges => {
+            models::LabelStyle::Edges => {
                 window_label[(label.pos_y - 1) as usize][(label.pos_x - 2) as usize] = format!("{}┌{}",color,RESET);
                 window_label[(label.pos_y - 1) as usize][(label.pos_x + (text_size as u16 * 2)) as usize] = format!("{}┐{}",color,RESET);
                 window_label[(label.pos_y + 1) as usize][(label.pos_x - 2) as usize] = format!("{}└{}",color,RESET);
                 window_label[(label.pos_y + 1) as usize][(label.pos_x + (text_size as u16 * 2)) as usize] = format!("{}┘{}",color,RESET);
 
             },
-            LabelStyle::Text => {}
+            models::LabelStyle::Text => {}
         }
         
         for (i, c) in label.text.chars().enumerate() {
@@ -508,20 +507,19 @@ fn label_window(window_map: &Vec<Vec<String>>,select: i16,vec_labels: &Vec<Label
             else { window_label[label.pos_y as usize][label.pos_x as usize + i as usize] = c.to_string(); }
         }
     }
-    // print_gui(window_label,terminal_x,terminal_y)
     
     window_label
 }
 
 // |--------------- LABELS ---------------|
 
-fn create_label(text: &String,posi_x: Option<&i32>,posi_y: Option<&i32>,label_type: Option<LabelType>,label_style: Option<LabelStyle>) -> Label {
+fn create_label(text: &String,posi_x: Option<&i32>,posi_y: Option<&i32>,label_type: Option<models::LabelType>,label_style: Option<models::LabelStyle>) -> models::Label {
 
     // Crea los labels con los parametros proporcionados, tiene varios option para ser versatil
     // para que automaticamente se asignen algunos valores, como por ejemplo para el assign_labels.
     
-    let mut r_type: LabelType = LabelType::Select;
-    let mut r_style: LabelStyle = LabelStyle::Text;
+    let mut r_type: models::LabelType = models::LabelType::Select;
+    let mut r_style: models::LabelStyle = models::LabelStyle::Text;
     let mut r_x: i32 = 0;
     let mut r_y: i32 = 0;
 
@@ -542,7 +540,7 @@ fn create_label(text: &String,posi_x: Option<&i32>,posi_y: Option<&i32>,label_ty
         None => {}
     }
     
-    Label {
+    models::Label {
         text: text.to_string(),
         label_type: r_type,
         style: r_style,
@@ -551,26 +549,30 @@ fn create_label(text: &String,posi_x: Option<&i32>,posi_y: Option<&i32>,label_ty
     }
 }
 
-fn asign_labels (strings: Vec<String>, ter_x: i32, ter_y: i32) -> Vec<Label> {
+fn asign_labels (strings: Vec<String>, ter_x: i32, ter_y: i32) -> Vec<models::Label> {
+
+    // This is for just trow here some labelz and the program read it, and assign the
+    // best pos in Y and X (center).
 
     // Usualmente para asignar labels para el menu tipo select sin informacion entre medio
 
-    let mut vec_label: Vec<Label> = Vec::new();
+    let mut vec_label: Vec<models::Label> = Vec::new();
     let vec_size = strings.iter().len() as i32;
     let center_x = ter_x / 2;
     let center_y = (ter_y - (ter_y / 20) - 1) / vec_size;
     let mut count = 0;
 
     for string in strings.iter() {
-        vec_label.push(create_label(string,Some(&(center_x -( string.len() as i32 / 2))),Some(&(center_y * count + (ter_y / 20) + 1)),Some(LabelType::Select),Some(LabelStyle::Border)));
+        vec_label.push(create_label(string,Some(&(center_x -( string.len() as i32 / 2))),Some(&(center_y * count + (ter_y / 20) + 1)),Some(models::LabelType::Select),Some(models::LabelStyle::Border)));
         count += 1;
     }
     vec_label
 }
 
-fn reset_labels (vec_labels: Vec<Label>, ter_x: i32, ter_y: i32) -> Vec<Label> {
+fn reset_labels (vec_labels: Vec<models::Label>, ter_x: i32, ter_y: i32) -> Vec<models::Label> {
 
-    // Usualmente para cuando cambia el tamaño de la terminal y añadir sus nuevas posiciones
+    // This is used regulary when the window width and height changes, the labels for that need
+    // to resize his pos_x and pos_y.
 
     let mut string_vec: Vec<String> = Vec::new();
     for label in vec_labels.iter() {
