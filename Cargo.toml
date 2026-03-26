@@ -6,3 +6,5 @@ edition = "2024"
 [dependencies]
 rand = "0.9"
 crossterm = "0.29"
+log = "0.4.29"
+tokio = "1.50.0"

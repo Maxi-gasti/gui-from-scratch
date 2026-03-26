@@ -209,8 +209,42 @@ fn hardware_menu(window_map: &Vec<Vec<String>>, terminal_x: u16,terminal_y: u16)
 
 
     let mut clock_time: u16 = 1;  
+
+    add_label_to_window(&mut window_label_hardware, create_label(
+        &cpu::cpu_info(true_y / 5),
+        Some(&{
+            let x = (true_x as f32 / 100.0) as f32 * 70.0;
+            x as i32 + 1
+        }),
+        Some(&{
+            let y = (true_y as f32 / 100.0) as f32 * 5.0;
+            y as i32 + 1
+        }),
+        Some(models::LabelType::Text),
+        Some(models::LabelStyle::Text)
+    ));
+    add_label_to_window(&mut window_label_hardware, create_label(
+        &cpu::clock(clock_time),
+        Some(&{
+            let x = (true_x as f32 / 100.0) as f32 * 55.0;
+            x as i32 + 1
+            }),
+            Some(&{
+                let y = (true_y as f32 / 100.0) as f32 * 5.0;
+                y as i32 + 1
+            }),
+            Some(models::LabelType::Text),
+            Some(models::LabelStyle::Text)
+    ));
+    gui::print_gui(&window_label_hardware,terminal_x,terminal_y);
+    if clock_time+1 >= 9 {
+        clock_time = 1;
+    } else {
+        clock_time += 1;
+    }
+
     loop {
-        if crossterm::event::poll(std::time::Duration::from_millis(50))? {
+        if crossterm::event::poll(std::time::Duration::from_millis(750))? {
             if let crossterm::event::Event::Key(key) = crossterm::event::read()? {
                 match key.code {
                     crossterm::event::KeyCode::Char('q') => break,
@@ -222,7 +256,6 @@ fn hardware_menu(window_map: &Vec<Vec<String>>, terminal_x: u16,terminal_y: u16)
             }
         }
 
-        gui::print_gui(&window_label_hardware,terminal_x,terminal_y);
         add_label_to_window(&mut window_label_hardware, create_label(
                &cpu::cpu_info(true_y / 5),
                 Some(&{
@@ -254,6 +287,7 @@ fn hardware_menu(window_map: &Vec<Vec<String>>, terminal_x: u16,terminal_y: u16)
         } else {
             clock_time += 1;
         }
+        gui::print_gui(&window_label_hardware,terminal_x,terminal_y);
     }
     Ok(())
 }
