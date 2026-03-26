@@ -3,6 +3,8 @@ pub mod cpu;
 pub mod gui;
 use crossterm::terminal::size;
 use std::io;
+
+// use std::thread;
 // use std::fs;
 
 const BLACK: &str = "\x1b[90m";
@@ -12,6 +14,9 @@ const YELLOW: &str = "\x1b[1;33m";
 const RESET: &str = "\x1b[0m";
 
 fn main() -> io::Result<()> {
+
+    // This let the program to recibe raw touchs, like you not need to put a input fn to insert
+    // letters.
 
     let _ = crossterm::terminal::enable_raw_mode();
 
@@ -33,6 +38,19 @@ fn main() -> io::Result<()> {
     let mut window_label: Vec<Vec<String>> = window_map.clone();
     window_label = label_window(&window_map,select,&vec_labels,&select_labels,terminal_x,terminal_y);
     gui::print_gui(&window_label,terminal_x,terminal_y);
+
+    // thread::spawn( move || {
+    //     loop {
+    //         match crossterm::event::read()? {
+    //             // w = width, h = height
+    //             crossterm::event::Event::Resize(w,h) => {
+    //                 terminal_x = w;
+    //                 terminal_y = h;
+    //             },
+    //             _ => {},
+    //         }
+    //     }
+    // });
 
     // label_window(&window_map,select,&vec_labels,&select_labels,terminal_x,terminal_y);
     
@@ -162,6 +180,10 @@ fn main() -> io::Result<()> {
             _ => {}
         }
     }
+    // To fix the bad line that leaves.
+    let _ = crossterm::terminal::disable_raw_mode();
+    gui::clear_terminal();
+    println!("Good bye!");
     Ok(())
 }
 
