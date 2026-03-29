@@ -3,7 +3,8 @@ pub mod cpu;
 pub mod gui;
 use crossterm::terminal::size;
 use std::io;
-
+use std::fs;
+use std::io::Write;
 // use std::thread;
 // use std::fs;
 
@@ -20,17 +21,21 @@ fn main() -> io::Result<()> {
 
     let _ = crossterm::terminal::enable_raw_mode();
 
+    let mut file_log = fs::OpenOptions::new().create(true).append(true).open("log.txt")?;
+    
+    writeln!(file_log, "|---------- START ----------|")?;
+
     let mut select: i16 = 0;
     let mut menu_location: &str = "menu";
     
 
     // Esto se cuenta en lineas no en pixeles.
-    let (mut terminal_x, mut terminal_y) = size()?;
+    let (mut terminal_x,mut terminal_y) = size()?;
     
     let mut vec_labels = asign_labels(vec![format!("HARDWARE CHECK"),format!("HOUR"),format!("WEATHER"),format!("CONFIG"),"LEAVE".to_string()],terminal_x as i32,terminal_y as i32);
     let mut select_labels = define_select_labels(&vec_labels);
     
-    let window_map: Vec<Vec<String>> = map_window(terminal_x,terminal_y);
+    let mut window_map: Vec<Vec<String>> = map_window(terminal_x,terminal_y);
 
     // This is trying to be a buffer for printing GUI, i cant use all time calculations because i
     // cant depend 100% on the cpu, so, i will use this like a buffer, this is my first time using
@@ -60,7 +65,7 @@ fn main() -> io::Result<()> {
             crossterm::event::Event::Resize(width,height) => {
                 terminal_x = width;
                 terminal_y = height;
-                let window_map = map_window(width,height);
+                window_map = map_window(width,height);
                 vec_labels = reset_labels(vec_labels,width as i32, height as i32);
                 select_labels = define_select_labels(&vec_labels);
                 // 
@@ -91,9 +96,13 @@ fn main() -> io::Result<()> {
                                     0 => {
 
                                         // ACA UN MENU GUI!
-                                        
-                                        hardware_menu(&window_map,terminal_x,terminal_y);
+                                        // let text = format!("terminal_x antes de hardware: {}", terminal_x);
+                                        writeln!(file_log,"Ter_x: {}", terminal_x)?;
+                                        hardware_menu(&window_map,terminal_x, terminal_y);
                                         gui::print_gui(&window_label,terminal_x,terminal_y);
+                                        // let text = format!("terminal_x despues de hardware: {}", terminal_x);
+                                        writeln!(file_log ,"Ter_x: {}", terminal_x)?;
+                                        
 
                                     },
                                     1 => {},
@@ -183,19 +192,20 @@ fn main() -> io::Result<()> {
     // To fix the bad line that leaves.
     let _ = crossterm::terminal::disable_raw_mode();
     gui::clear_terminal();
+    writeln!(file_log, "|---------- END ----------|\n")?;
     println!("Good bye!");
     Ok(())
 }
 
-fn hardware_menu(window_map: &Vec<Vec<String>>, terminal_x: u16,terminal_y: u16) -> io::Result<()> {
+fn hardware_menu(window_map: &Vec<Vec<String>>,mut terminal_x: u16, mut terminal_y: u16) -> io::Result<()> {
     
     // Clon of window_map for not touch the main window_label.
     let mut window_label_hardware = window_map.clone();
 
     let select_hardware = 0;
 
-    let true_x = terminal_x - 2;
-    let true_y = terminal_y - 2;
+    let mut true_x = terminal_x - 2;
+    let mut true_y = terminal_y - 2;
 
     let vec_label_hardware = vec![
         create_label(
@@ -228,7 +238,6 @@ fn hardware_menu(window_map: &Vec<Vec<String>>, terminal_x: u16,terminal_y: u16)
     let vec_label_hardware_select = define_select_labels(&vec_label_hardware);
 
     window_label_hardware = label_window(&window_label_hardware,select_hardware, &vec_label_hardware,&vec_label_hardware_select,terminal_x,terminal_y);
-
 
     let mut clock_time: u16 = 1;  
 
@@ -267,14 +276,66 @@ fn hardware_menu(window_map: &Vec<Vec<String>>, terminal_x: u16,terminal_y: u16)
 
     loop {
         if crossterm::event::poll(std::time::Duration::from_millis(750))? {
-            if let crossterm::event::Event::Key(key) = crossterm::event::read()? {
-                match key.code {
-                    crossterm::event::KeyCode::Char('q') => break,
-                    crossterm::event::KeyCode::Enter => {
-                        break
-                    },
-                    _ => {},
-                }
+            match crossterm::event::read()? {
+                crossterm::event::Event::Resize(width,height) => {
+                    terminal_x = width;
+                    terminal_y = height;
+                    
+                    true_x = terminal_x - 2;
+                    true_y = terminal_y - 2;
+                    
+                    // THIS WILL ALL HAPPEN AGAIN. bercause i dont wanna do a function just for
+                    // repeat 2 times.
+                    
+                    // Clon of window_map for not touch the main window_label.
+                    window_label_hardware = map_window(terminal_x,terminal_y);
+                    let vec_label_hardware_ = vec![
+                        create_label(
+                            &String::from("Hardware Check"), 
+                            Some(&{
+                                let x = (true_x as f32 / 100.0) as f32 * 3.0;
+                                x as i32 + 1
+                            }),
+                            Some(&{
+                                let y = (true_y as f32 / 100.0) as f32 * 5.0;
+                                y as i32 + 1
+                            }),
+                            Some(models::LabelType::Line), 
+                            Some(models::LabelStyle::BottomBorder)),
+                        create_label(
+                        &String::from("Leave"), 
+                        Some(&{
+                            let x = (true_x as f32 / 100.0) as f32 * 3.0;
+                            x as i32 + 1
+                        }),
+                        Some(&{
+                            let y = (true_y as f32 / 100.0) as f32 * 94.0;
+                            y as i32 + 1
+                        }),
+                        Some(models::LabelType::Select), 
+                        Some(models::LabelStyle::Edges))
+                    ];
+                    
+                    let vec_label_hardware_select = define_select_labels(&vec_label_hardware);
+                    window_label_hardware = label_window(&window_label_hardware,select_hardware, &vec_label_hardware,&vec_label_hardware_select,terminal_x,terminal_y);
+
+                    // let window_map = map_window(width,height);
+                    // vec_labels = reset_labels(vec_labels,width as i32, height as i32);
+                    // select_labels = define_select_labels(&vec_labels);
+                    // // 
+                    // window_label = label_window(&window_map,select,&vec_labels,&select_labels,terminal_x,terminal_y);
+                    // gui::print_gui(&window_label,terminal_x,terminal_y);
+                },
+                crossterm::event::Event::Key(key) => {
+                    match key.code {
+                        crossterm::event::KeyCode::Char('q') => break,
+                        crossterm::event::KeyCode::Enter => {
+                            break
+                        },
+                        _ => {},
+                    }
+                },
+                _ => {},
             }
         }
 
