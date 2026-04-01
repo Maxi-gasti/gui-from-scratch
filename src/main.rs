@@ -40,7 +40,6 @@ fn main() -> io::Result<()> {
 
 
     let mut file_log = fs::OpenOptions::new().create(true).append(true).open("log.txt")?;
-    
     writeln!(file_log, "|---------- START ----------|")?;
 
     let mut select: i16 = 0;
@@ -62,21 +61,6 @@ fn main() -> io::Result<()> {
     window_label = label_window(&window_map,select,&vec_labels,&select_labels,terminal_x,terminal_y);
     gui::print_gui(&window_label,terminal_x,terminal_y);
 
-    // thread::spawn( move || {
-    //     loop {
-    //         match crossterm::event::read()? {
-    //             // w = width, h = height
-    //             crossterm::event::Event::Resize(w,h) => {
-    //                 terminal_x = w;
-    //                 terminal_y = h;
-    //             },
-    //             _ => {},
-    //         }
-    //     }
-    // });
-
-    // label_window(&window_map,select,&vec_labels,&select_labels,terminal_x,terminal_y);
-    
     loop {
 
         match crossterm::event::read()? {
@@ -117,6 +101,9 @@ fn main() -> io::Result<()> {
                                         // let text = format!("terminal_x antes de hardware: {}", terminal_x);
                                         writeln!(file_log,"Ter_x: {}", terminal_x)?;
                                         hardware_menu(&window_map, &mut terminal_x, &mut terminal_y);
+                                        writeln!(file_log, "Y:{}",terminal_y);
+                                        writeln!(file_log, "60%:{}",percentage(terminal_y as i32,40,{if terminal_y % 2 != 0 { 1 }else{ 0}}));
+                                        writeln!(file_log, "Impar:{}",{if terminal_y % 2 != 0 { 1 }else{ 0}});
                                         // let text = format!("terminal_x despues de hardware: {}", terminal_x);
                                         writeln!(file_log ,"Ter_x_f: {}", terminal_x)?;
                                         
@@ -237,23 +224,25 @@ fn hardware_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, terminal_y:
         create_label(
             &String::from("Hardware Check"), 
             Some(&{
-                let x = (true_x as f32 / 100.0) as f32 * 3.0;
+                let x = (true_x as f32 / 100.0) as f32 * 60.0 + 3.0;
+                // this +1 is because x interrup the line because the style of the label can be
+                // upper
                 x as i32 + 1
             }),
             Some(&{
-                let y = (true_y as f32 / 100.0) as f32 * 5.0;
+                let y = (true_y as f32 / 100.0) as f32 * 60.0 + 2.0;
                 y as i32 + 1
             }),
             Some(models::LabelType::Line), 
             Some(models::LabelStyle::BottomBorder)),
         create_label(
-            &String::from("Leave"), 
+            &String::from("Leave 'Enter'"), 
             Some(&{
                 let x = (true_x as f32 / 100.0) as f32 * 61.0;
                 x as i32 + 1
             }),
             Some(&{
-                let y = (true_y as f32 / 100.0) as f32 * 94.0;
+                let y = true_y as f32 - 3.0;
                 y as i32 + 1
             }),
             Some(models::LabelType::Line), 
@@ -346,12 +335,6 @@ fn hardware_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, terminal_y:
                     vec_label_hardware_select = define_select_labels(&vec_label_hardware);
                     window_label_hardware = label_window(&window_label_hardware,select_hardware, &vec_label_hardware,&vec_label_hardware_select,*terminal_x,*terminal_y);
 
-                    // let window_map = map_window(width,height);
-                    // vec_labels = reset_labels(vec_labels,width as i32, height as i32);
-                    // select_labels = define_select_labels(&vec_labels);
-                    // // 
-                    // window_label = label_window(&window_map,select,&vec_labels,&select_labels,terminal_x,terminal_y);
-                    // gui::print_gui(&window_label,terminal_x,terminal_y);
                 },
                 crossterm::event::Event::Key(key) => {
                     match key.code {
@@ -403,23 +386,70 @@ fn hardware_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, terminal_y:
 }
 
 fn put_hardware_lines_map (window_map: &mut Vec<Vec<String>>, terminal_x: u16, terminal_y: u16) {
+    
+    
     let mut impar_x = 0;
     let mut impar_y = 0;
     if terminal_x % 2 != 0 { impar_x += 1; }
     if terminal_y % 2 != 0 { impar_y += 1; }
     
-    for i in 0..(terminal_y-2) {
+    // Y
+    
+    for i in 0..(terminal_y - 2) {
         window_map[(2+i as i32) as usize][percentage(terminal_x as i32,60,impar_x) as usize] = String::from("│");
+    }
+    for i in 0..(terminal_y - 2) {
+        window_map[(2+i as i32) as usize][terminal_x as usize] = String::from("│");
+    }
+    for i in 0..(terminal_y - 2) {
+        window_map[(2+i as i32) as usize][1 as usize] = String::from("│");
+    }
+    for i in 0..(terminal_y - 2) {
+        window_map[(2+i as i32) as usize][(percentage(terminal_x as i32,60,impar_x)-1.0) as usize] = String::from("│");
+    }
+    
+    // X
+
+    for i in 0..( terminal_x as i32 - percentage(terminal_x as i32, 60,impar_x) as i32 - 1) {
+        window_map[percentage(terminal_y as i32, 60, impar_y) as usize][(percentage(terminal_x as i32,60,impar_x) as i32 + i + 1 ) as usize] = String::from("─");
+    }
+    for i in 0..( terminal_x as i32 - percentage(terminal_x as i32, 60,impar_x) as i32 - 1) {
+        window_map[(percentage(terminal_y as i32, 60, impar_y) + 1.0) as usize][(percentage(terminal_x as i32,60,impar_x) as i32 + i + 1 ) as usize] = String::from("─");
+    }
+    
+    for i in 0..( terminal_x as i32 - percentage(terminal_x as i32, 60,impar_x) as i32 - 1) {
+        window_map[1][(percentage(terminal_x as i32,60,impar_x) as i32 + i + 1 ) as usize] = String::from("─");
+    }
+    for i in 0..( terminal_x as i32 - percentage(terminal_x as i32, 60,impar_x) as i32 - 1) {
+        window_map[terminal_y as usize][(percentage(terminal_x as i32,60,impar_x) as i32 + i + 1 ) as usize] = String::from("─");
+    }
+    for i in 0..( terminal_x as i32 - percentage(terminal_x as i32, 40,impar_x) as i32 - 1) {
+        window_map[terminal_y as usize][( i + 1 ) as usize] = String::from("─");
+    }
+    for i in 0..( terminal_x as i32 - percentage(terminal_x as i32, 40,impar_x) as i32 - 1) {
+        window_map[1][( i + 1 ) as usize] = String::from("─");
     }
     
     window_map[1][percentage(terminal_x as i32,60,impar_x) as usize] = String::from("┌");
     window_map[terminal_y as usize][percentage(terminal_x as i32,60,impar_x) as usize] = String::from("└");
+    
+    window_map[1][terminal_x as usize] = String::from("┐");
+    window_map[terminal_y as usize][terminal_x as usize] = String::from("┘");
+    
     window_map[percentage(terminal_y as i32, 60, impar_y) as usize][percentage(terminal_x as i32,60,impar_x) as usize] = String::from("└");
     window_map[(percentage(terminal_y as i32, 60, impar_y) + 1.0) as usize][percentage(terminal_x as i32,60,impar_x) as usize] = String::from("┌");
     
-    for i in 0..( terminal_x as i32 - percentage(terminal_x as i32, 60,impar_x) as i32 - 1) {
-        window_map[percentage(terminal_y as i32, 60, impar_y) as usize][(percentage(terminal_x as i32,60,impar_x) as i32 + i + 1 ) as usize] = String::from("─");
-    }
+    window_map[percentage(terminal_y as i32, 60, impar_y) as usize][terminal_x as usize] = String::from("┘");
+    window_map[(percentage(terminal_y as i32, 60, impar_y) + 1.0) as usize][terminal_x as usize] = String::from("┐");
+    
+    window_map[1][1] = String::from("┌");
+    window_map[terminal_y as usize][1] = String::from("└");
+    
+    window_map[1][(percentage(terminal_x as i32,60,impar_x)-1.0) as usize] = String::from("┐");
+    window_map[terminal_y as usize][(percentage(terminal_x as i32,60,impar_x)-1.0) as usize] = String::from("┘");
+
+
+    
     // for i in 0..(terminal_y-2) {
     //
     // }
@@ -631,15 +661,15 @@ fn label_window(window_map: &Vec<Vec<String>>,select: i16,vec_labels: &Vec<model
     
     let mut window_label = window_map.clone();
     
-    window_label[(terminal_y-2) as usize][2 as usize] = format!("{}",select);
-    window_label[(terminal_y-2) as usize][4 as usize] = String::from("|");
-    window_label[(terminal_y-2) as usize][6 as usize] = String::from("L");
-    window_label[(terminal_y-2) as usize][7 as usize] = String::from("e");
-    window_label[(terminal_y-2) as usize][8 as usize] = String::from("a");
-    window_label[(terminal_y-2) as usize][9 as usize] = String::from("v");
-    window_label[(terminal_y-2) as usize][10 as usize] = String::from("e");
-    window_label[(terminal_y-2) as usize][11 as usize] = String::from(":");
-    window_label[(terminal_y-2) as usize][13 as usize] = String::from("Q");
+    // window_label[(terminal_y-2) as usize][2 as usize] = format!("{}",select);
+    // window_label[(terminal_y-2) as usize][4 as usize] = String::from("|");
+    // window_label[(terminal_y-2) as usize][6 as usize] = String::from("L");
+    // window_label[(terminal_y-2) as usize][7 as usize] = String::from("e");
+    // window_label[(terminal_y-2) as usize][8 as usize] = String::from("a");
+    // window_label[(terminal_y-2) as usize][9 as usize] = String::from("v");
+    // window_label[(terminal_y-2) as usize][10 as usize] = String::from("e");
+    // window_label[(terminal_y-2) as usize][11 as usize] = String::from(":");
+    // window_label[(terminal_y-2) as usize][13 as usize] = String::from("Q");
 
     for (index, label) in vec_labels.iter().enumerate() {
         let text_size = label.text.len();
