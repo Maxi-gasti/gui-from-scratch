@@ -14,12 +14,30 @@ const YELLOW2: &str = "\x1b[4;1;33m";
 const YELLOW: &str = "\x1b[1;33m";
 const RESET: &str = "\x1b[0m";
 
+
+// this struct is made for crossterm disable, so if the program panic or Ctrl+C just drop the
+// disable function.
+struct RawModeGuard;
+
+impl RawModeGuard {
+    fn new() -> io::Result<Self> {
+        crossterm::terminal::enable_raw_mode()?;
+        Ok(Self)
+    }
+}
+
+impl Drop for RawModeGuard {
+    fn drop(&mut self) {
+        let _ = crossterm::terminal::disable_raw_mode();
+    }
+}
+
 fn main() -> io::Result<()> {
 
     // This let the program to recibe raw touchs, like you not need to put a input fn to insert
     // letters.
+    let _raw_guard = RawModeGuard::new()?; // Se desactivará automáticamente al salir
 
-    let _ = crossterm::terminal::enable_raw_mode();
 
     let mut file_log = fs::OpenOptions::new().create(true).append(true).open("log.txt")?;
     
@@ -98,11 +116,17 @@ fn main() -> io::Result<()> {
                                         // ACA UN MENU GUI!
                                         // let text = format!("terminal_x antes de hardware: {}", terminal_x);
                                         writeln!(file_log,"Ter_x: {}", terminal_x)?;
-                                        hardware_menu(&window_map,terminal_x, terminal_y);
-                                        gui::print_gui(&window_label,terminal_x,terminal_y);
+                                        hardware_menu(&window_map, &mut terminal_x, &mut terminal_y);
                                         // let text = format!("terminal_x despues de hardware: {}", terminal_x);
-                                        writeln!(file_log ,"Ter_x: {}", terminal_x)?;
+                                        writeln!(file_log ,"Ter_x_f: {}", terminal_x)?;
                                         
+                                        // if terminal_x CHANGES then repeat
+                                        window_map = map_window(terminal_x,terminal_y);
+                                        vec_labels = reset_labels(vec_labels,terminal_x as i32, terminal_y as i32);
+                                        select_labels = define_select_labels(&vec_labels);
+                                        
+                                        window_label = label_window(&window_map,select,&vec_labels,&select_labels,terminal_x,terminal_y);
+                                        gui::print_gui(&window_label,terminal_x,terminal_y);
 
                                     },
                                     1 => {},
@@ -197,17 +221,19 @@ fn main() -> io::Result<()> {
     Ok(())
 }
 
-fn hardware_menu(window_map: &Vec<Vec<String>>,mut terminal_x: u16, mut terminal_y: u16) -> io::Result<()> {
+fn hardware_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, terminal_y: &mut u16) -> io::Result<()> {
+    
+    let select_hardware = 0;
+
+    let mut true_x = *terminal_x - 2;
+    let mut true_y = *terminal_y - 2;
     
     // Clon of window_map for not touch the main window_label.
     let mut window_label_hardware = window_map.clone();
+    put_hardware_lines_map(&mut window_label_hardware,true_x,true_y);
 
-    let select_hardware = 0;
 
-    let mut true_x = terminal_x - 2;
-    let mut true_y = terminal_y - 2;
-
-    let vec_label_hardware = vec![
+    let mut vec_label_hardware = vec![
         create_label(
             &String::from("Hardware Check"), 
             Some(&{
@@ -223,28 +249,28 @@ fn hardware_menu(window_map: &Vec<Vec<String>>,mut terminal_x: u16, mut terminal
         create_label(
             &String::from("Leave"), 
             Some(&{
-                let x = (true_x as f32 / 100.0) as f32 * 3.0;
+                let x = (true_x as f32 / 100.0) as f32 * 61.0;
                 x as i32 + 1
             }),
             Some(&{
                 let y = (true_y as f32 / 100.0) as f32 * 94.0;
                 y as i32 + 1
             }),
-            Some(models::LabelType::Select), 
+            Some(models::LabelType::Line), 
             Some(models::LabelStyle::Edges))
     ];
 
 
-    let vec_label_hardware_select = define_select_labels(&vec_label_hardware);
+    let mut vec_label_hardware_select = define_select_labels(&vec_label_hardware);
 
-    window_label_hardware = label_window(&window_label_hardware,select_hardware, &vec_label_hardware,&vec_label_hardware_select,terminal_x,terminal_y);
+    window_label_hardware = label_window(&window_label_hardware,select_hardware, &vec_label_hardware,&vec_label_hardware_select,*terminal_x,*terminal_y);
 
     let mut clock_time: u16 = 1;  
 
     add_label_to_window(&mut window_label_hardware, create_label(
         &cpu::cpu_info(true_y / 5),
         Some(&{
-            let x = (true_x as f32 / 100.0) as f32 * 70.0;
+            let x = (true_x as f32 / 100.0) as f32 * 85.0;
             x as i32 + 1
         }),
         Some(&{
@@ -257,7 +283,7 @@ fn hardware_menu(window_map: &Vec<Vec<String>>,mut terminal_x: u16, mut terminal
     add_label_to_window(&mut window_label_hardware, create_label(
         &cpu::clock(clock_time),
         Some(&{
-            let x = (true_x as f32 / 100.0) as f32 * 55.0;
+            let x = (true_x as f32 / 100.0) as f32 * 70.0;
             x as i32 + 1
             }),
             Some(&{
@@ -267,7 +293,7 @@ fn hardware_menu(window_map: &Vec<Vec<String>>,mut terminal_x: u16, mut terminal
             Some(models::LabelType::Text),
             Some(models::LabelStyle::Text)
     ));
-    gui::print_gui(&window_label_hardware,terminal_x,terminal_y);
+    gui::print_gui(&window_label_hardware,*terminal_x,*terminal_y);
     if clock_time+1 >= 9 {
         clock_time = 1;
     } else {
@@ -278,18 +304,19 @@ fn hardware_menu(window_map: &Vec<Vec<String>>,mut terminal_x: u16, mut terminal
         if crossterm::event::poll(std::time::Duration::from_millis(750))? {
             match crossterm::event::read()? {
                 crossterm::event::Event::Resize(width,height) => {
-                    terminal_x = width;
-                    terminal_y = height;
+                    *terminal_x = width;
+                    *terminal_y = height;
                     
-                    true_x = terminal_x - 2;
-                    true_y = terminal_y - 2;
+                    true_x = *terminal_x - 2;
+                    true_y = *terminal_y - 2;
                     
-                    // THIS WILL ALL HAPPEN AGAIN. bercause i dont wanna do a function just for
+                    // THIS WILL ALL HAPPEN AGAIN. because i dont wanna do a function just for
                     // repeat 2 times.
                     
                     // Clon of window_map for not touch the main window_label.
-                    window_label_hardware = map_window(terminal_x,terminal_y);
-                    let vec_label_hardware_ = vec![
+                    window_label_hardware = map_window(*terminal_x,*terminal_y);
+                    put_hardware_lines_map(&mut window_label_hardware,true_x,true_y);
+                    vec_label_hardware = vec![
                         create_label(
                             &String::from("Hardware Check"), 
                             Some(&{
@@ -305,19 +332,19 @@ fn hardware_menu(window_map: &Vec<Vec<String>>,mut terminal_x: u16, mut terminal
                         create_label(
                         &String::from("Leave"), 
                         Some(&{
-                            let x = (true_x as f32 / 100.0) as f32 * 3.0;
+                            let x = (true_x as f32 / 100.0) as f32 * 61.0;
                             x as i32 + 1
                         }),
                         Some(&{
                             let y = (true_y as f32 / 100.0) as f32 * 94.0;
                             y as i32 + 1
                         }),
-                        Some(models::LabelType::Select), 
+                        Some(models::LabelType::Line), 
                         Some(models::LabelStyle::Edges))
                     ];
                     
-                    let vec_label_hardware_select = define_select_labels(&vec_label_hardware);
-                    window_label_hardware = label_window(&window_label_hardware,select_hardware, &vec_label_hardware,&vec_label_hardware_select,terminal_x,terminal_y);
+                    vec_label_hardware_select = define_select_labels(&vec_label_hardware);
+                    window_label_hardware = label_window(&window_label_hardware,select_hardware, &vec_label_hardware,&vec_label_hardware_select,*terminal_x,*terminal_y);
 
                     // let window_map = map_window(width,height);
                     // vec_labels = reset_labels(vec_labels,width as i32, height as i32);
@@ -342,7 +369,7 @@ fn hardware_menu(window_map: &Vec<Vec<String>>,mut terminal_x: u16, mut terminal
         add_label_to_window(&mut window_label_hardware, create_label(
                &cpu::cpu_info(true_y / 5),
                 Some(&{
-                    let x = (true_x as f32 / 100.0) as f32 * 70.0;
+                    let x = (true_x as f32 / 100.0) as f32 * 85.0;
                     x as i32 + 1
                 }),
                 Some(&{
@@ -355,7 +382,7 @@ fn hardware_menu(window_map: &Vec<Vec<String>>,mut terminal_x: u16, mut terminal
         add_label_to_window(&mut window_label_hardware, create_label(
                &cpu::clock(clock_time),
                 Some(&{
-                    let x = (true_x as f32 / 100.0) as f32 * 55.0;
+                    let x = (true_x as f32 / 100.0) as f32 * 70.0;
                     x as i32 + 1
                 }),
                 Some(&{
@@ -370,9 +397,36 @@ fn hardware_menu(window_map: &Vec<Vec<String>>,mut terminal_x: u16, mut terminal
         } else {
             clock_time += 1;
         }
-        gui::print_gui(&window_label_hardware,terminal_x,terminal_y);
+        gui::print_gui(&window_label_hardware,*terminal_x,*terminal_y);
     }
     Ok(())
+}
+
+fn put_hardware_lines_map (window_map: &mut Vec<Vec<String>>, terminal_x: u16, terminal_y: u16) {
+    let mut impar_x = 0;
+    let mut impar_y = 0;
+    if terminal_x % 2 != 0 { impar_x += 1; }
+    if terminal_y % 2 != 0 { impar_y += 1; }
+    
+    for i in 0..(terminal_y-2) {
+        window_map[(2+i as i32) as usize][percentage(terminal_x as i32,60,impar_x) as usize] = String::from("│");
+    }
+    
+    window_map[1][percentage(terminal_x as i32,60,impar_x) as usize] = String::from("┌");
+    window_map[terminal_y as usize][percentage(terminal_x as i32,60,impar_x) as usize] = String::from("└");
+    window_map[percentage(terminal_y as i32, 60, impar_y) as usize][percentage(terminal_x as i32,60,impar_x) as usize] = String::from("└");
+    window_map[(percentage(terminal_y as i32, 60, impar_y) + 1.0) as usize][percentage(terminal_x as i32,60,impar_x) as usize] = String::from("┌");
+    
+    for i in 0..( terminal_x as i32 - percentage(terminal_x as i32, 60,impar_x) as i32 - 1) {
+        window_map[percentage(terminal_y as i32, 60, impar_y) as usize][(percentage(terminal_x as i32,60,impar_x) as i32 + i + 1 ) as usize] = String::from("─");
+    }
+    // for i in 0..(terminal_y-2) {
+    //
+    // }
+}
+
+fn percentage (number: i32, percent: i32, impar: i32) -> f32 {
+    ((number + impar) as f32 / 100.0) * percent as f32
 }
 
 
