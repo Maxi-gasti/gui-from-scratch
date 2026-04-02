@@ -102,7 +102,7 @@ fn main() -> io::Result<()> {
                                         writeln!(file_log,"Ter_x: {}", terminal_x)?;
                                         hardware_menu(&window_map, &mut terminal_x, &mut terminal_y);
                                         writeln!(file_log, "Y:{}",terminal_y);
-                                        writeln!(file_log, "60%:{}",percentage(terminal_y as i32,40,{if terminal_y % 2 != 0 { 1 }else{ 0}}));
+                                        writeln!(file_log, "60%:{}",percentage(terminal_y as i32,40));
                                         writeln!(file_log, "Impar:{}",{if terminal_y % 2 != 0 { 1 }else{ 0}});
                                         // let text = format!("terminal_x despues de hardware: {}", terminal_x);
                                         writeln!(file_log ,"Ter_x_f: {}", terminal_x)?;
@@ -224,7 +224,7 @@ fn hardware_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, terminal_y:
         create_label(
             &String::from("Hardware Check"), 
             Some(&{
-                let x = (true_x as f32 / 100.0) as f32 * 60.0 + 3.0;
+                let x = (true_x as f32 / 100.0) as f32 * 60.0 + 4.0;
                 // this +1 is because x interrup the line because the style of the label can be
                 // upper
                 x as i32 + 1
@@ -238,7 +238,7 @@ fn hardware_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, terminal_y:
         create_label(
             &String::from("Leave 'Enter'"), 
             Some(&{
-                let x = (true_x as f32 / 100.0) as f32 * 61.0;
+                let x = (true_x as f32 / 100.0) as f32 * 60.0 + 5.0;
                 x as i32 + 1
             }),
             Some(&{
@@ -257,9 +257,28 @@ fn hardware_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, terminal_y:
     let mut clock_time: u16 = 1;  
 
     add_label_to_window(&mut window_label_hardware, create_label(
-        &cpu::cpu_info(true_y / 5),
+        &cpu::cpu_info((percentage(true_y as i32,60) - 6.0) as u16),
         Some(&{
-            let x = (true_x as f32 / 100.0) as f32 * 85.0;
+            let mut x = (true_x as f32 / 100.0) as f32 * 60.0 + 1.0;
+            let mut v = (true_x as f32 / 100.0) as f32 * 40.0;
+            v = v - 20.0;
+            v = v / 2.0;
+            v = v - (cpu::cpu_core_num_info() * 2) as f32;
+            x = x + 20.0 + v;
+            x as i32 + 1
+        }),
+        Some(&{
+            // let y = (true_y as f32 / 100.0) as f32 * 5.0;
+            let y = 2;
+            y as i32 + 1
+        }),
+        Some(models::LabelType::Text),
+        Some(models::LabelStyle::Text)
+    ));
+    add_label_to_window(&mut window_label_hardware, create_label(
+        &cpu::clock(clock_time),
+        Some(&{
+            let x = (true_x as f32 / 100.0) as f32 * 60.0 + 1.0;
             x as i32 + 1
         }),
         Some(&{
@@ -269,19 +288,6 @@ fn hardware_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, terminal_y:
         Some(models::LabelType::Text),
         Some(models::LabelStyle::Text)
     ));
-    add_label_to_window(&mut window_label_hardware, create_label(
-        &cpu::clock(clock_time),
-        Some(&{
-            let x = (true_x as f32 / 100.0) as f32 * 70.0;
-            x as i32 + 1
-            }),
-            Some(&{
-                let y = (true_y as f32 / 100.0) as f32 * 5.0;
-                y as i32 + 1
-            }),
-            Some(models::LabelType::Text),
-            Some(models::LabelStyle::Text)
-    ));
     gui::print_gui(&window_label_hardware,*terminal_x,*terminal_y);
     if clock_time+1 >= 9 {
         clock_time = 1;
@@ -290,7 +296,7 @@ fn hardware_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, terminal_y:
     }
 
     loop {
-        if crossterm::event::poll(std::time::Duration::from_millis(750))? {
+        if crossterm::event::poll(std::time::Duration::from_millis(1000))? {
             match crossterm::event::read()? {
                 crossterm::event::Event::Resize(width,height) => {
                     *terminal_x = width;
@@ -309,27 +315,28 @@ fn hardware_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, terminal_y:
                         create_label(
                             &String::from("Hardware Check"), 
                             Some(&{
-                                let x = (true_x as f32 / 100.0) as f32 * 3.0;
+                                let x = (true_x as f32 / 100.0) as f32 * 60.0 + 4.0;
                                 x as i32 + 1
                             }),
                             Some(&{
-                                let y = (true_y as f32 / 100.0) as f32 * 5.0;
+                                let y = (true_y as f32 / 100.0) as f32 * 60.0 + 2.0;
                                 y as i32 + 1
                             }),
                             Some(models::LabelType::Line), 
                             Some(models::LabelStyle::BottomBorder)),
                         create_label(
-                        &String::from("Leave"), 
-                        Some(&{
-                            let x = (true_x as f32 / 100.0) as f32 * 61.0;
-                            x as i32 + 1
-                        }),
-                        Some(&{
-                            let y = (true_y as f32 / 100.0) as f32 * 94.0;
-                            y as i32 + 1
-                        }),
-                        Some(models::LabelType::Line), 
-                        Some(models::LabelStyle::Edges))
+                            &String::from("Leave 'Enter'"), 
+                            Some(&{
+                                let x = (true_x as f32 / 100.0) as f32 * 60.0 + 5.0;
+                                x as i32 + 1
+                            }),
+                            Some(&{
+                                let y = true_y as f32 - 3.0;
+                                y as i32 + 1
+                            }),
+                            Some(models::LabelType::Line), 
+                            Some(models::LabelStyle::Edges)
+                        )
                     ];
                     
                     vec_label_hardware_select = define_select_labels(&vec_label_hardware);
@@ -350,30 +357,36 @@ fn hardware_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, terminal_y:
         }
 
         add_label_to_window(&mut window_label_hardware, create_label(
-               &cpu::cpu_info(true_y / 5),
-                Some(&{
-                    let x = (true_x as f32 / 100.0) as f32 * 85.0;
-                    x as i32 + 1
-                }),
-                Some(&{
-                    let y = (true_y as f32 / 100.0) as f32 * 5.0;
-                    y as i32 + 1
-                }),
-                Some(models::LabelType::Text),
-                Some(models::LabelStyle::Text)
+            &cpu::cpu_info((percentage(true_y as i32,60) - 6.0) as u16),
+            Some(&{
+                let mut x = (true_x as f32 / 100.0) as f32 * 60.0 + 1.0;
+                let mut v = (true_x as f32 / 100.0) as f32 * 40.0;
+                v = v - 20.0;
+                v = v / 2.0;
+                v = v - (cpu::cpu_core_num_info() * 2) as f32;
+                x = x + 20.0 + v;
+                x as i32 + 1
+            }),
+            Some(&{
+                // let y = (true_y as f32 / 100.0) as f32 * 5.0;
+                let y = 2;
+                y as i32 + 1
+            }),
+            Some(models::LabelType::Text),
+            Some(models::LabelStyle::Text)
         ));
         add_label_to_window(&mut window_label_hardware, create_label(
-               &cpu::clock(clock_time),
-                Some(&{
-                    let x = (true_x as f32 / 100.0) as f32 * 70.0;
-                    x as i32 + 1
-                }),
-                Some(&{
-                    let y = (true_y as f32 / 100.0) as f32 * 5.0;
-                    y as i32 + 1
-                }),
-                Some(models::LabelType::Text),
-                Some(models::LabelStyle::Text)
+            &cpu::clock(clock_time),
+            Some(&{
+                let x = (true_x as f32 / 100.0) as f32 * 60.0 + 1.0;
+                x as i32 + 1
+            }),
+            Some(&{
+                let y = (true_y as f32 / 100.0) as f32 * 5.0;
+                y as i32 + 1
+            }),
+            Some(models::LabelType::Text),
+            Some(models::LabelStyle::Text)
         ));
         if clock_time+1 >= 9 {
             clock_time = 1;
@@ -396,7 +409,7 @@ fn put_hardware_lines_map (window_map: &mut Vec<Vec<String>>, terminal_x: u16, t
     // Y
     
     for i in 0..(terminal_y - 2) {
-        window_map[(2+i as i32) as usize][percentage(terminal_x as i32,60,impar_x) as usize] = String::from("│");
+        window_map[(2+i as i32) as usize][percentage(terminal_x as i32,60) as usize] = String::from("│");
     }
     for i in 0..(terminal_y - 2) {
         window_map[(2+i as i32) as usize][terminal_x as usize] = String::from("│");
@@ -405,48 +418,48 @@ fn put_hardware_lines_map (window_map: &mut Vec<Vec<String>>, terminal_x: u16, t
         window_map[(2+i as i32) as usize][1 as usize] = String::from("│");
     }
     for i in 0..(terminal_y - 2) {
-        window_map[(2+i as i32) as usize][(percentage(terminal_x as i32,60,impar_x)-1.0) as usize] = String::from("│");
+        window_map[(2+i as i32) as usize][(percentage(terminal_x as i32,60) - 1.0) as usize] = String::from("│");
     }
     
     // X
 
-    for i in 0..( terminal_x as i32 - percentage(terminal_x as i32, 60,impar_x) as i32 - 1) {
-        window_map[percentage(terminal_y as i32, 60, impar_y) as usize][(percentage(terminal_x as i32,60,impar_x) as i32 + i + 1 ) as usize] = String::from("─");
+    for i in 0..( terminal_x as i32 - percentage(terminal_x as i32, 60) as i32 - 1) {
+        window_map[percentage(terminal_y as i32, 60) as usize][(percentage(terminal_x as i32,60) as i32 + i + 1 ) as usize] = String::from("─");
     }
-    for i in 0..( terminal_x as i32 - percentage(terminal_x as i32, 60,impar_x) as i32 - 1) {
-        window_map[(percentage(terminal_y as i32, 60, impar_y) + 1.0) as usize][(percentage(terminal_x as i32,60,impar_x) as i32 + i + 1 ) as usize] = String::from("─");
+    for i in 0..( terminal_x as i32 - percentage(terminal_x as i32, 60) as i32 - 1) {
+        window_map[(percentage(terminal_y as i32, 60) + 1.0) as usize][(percentage(terminal_x as i32,60) as i32 + i + 1 ) as usize] = String::from("─");
     }
     
-    for i in 0..( terminal_x as i32 - percentage(terminal_x as i32, 60,impar_x) as i32 - 1) {
-        window_map[1][(percentage(terminal_x as i32,60,impar_x) as i32 + i + 1 ) as usize] = String::from("─");
+    for i in 0..( terminal_x as i32 - percentage(terminal_x as i32, 60) as i32 - 1) {
+        window_map[1][(percentage(terminal_x as i32,60) as i32 + i + 1 ) as usize] = String::from("─");
     }
-    for i in 0..( terminal_x as i32 - percentage(terminal_x as i32, 60,impar_x) as i32 - 1) {
-        window_map[terminal_y as usize][(percentage(terminal_x as i32,60,impar_x) as i32 + i + 1 ) as usize] = String::from("─");
+    for i in 0..( terminal_x as i32 - percentage(terminal_x as i32, 60) as i32 - 1) {
+        window_map[terminal_y as usize][(percentage(terminal_x as i32,60) as i32 + i + 1 ) as usize] = String::from("─");
     }
-    for i in 0..( terminal_x as i32 - percentage(terminal_x as i32, 40,impar_x) as i32 - 1) {
+    for i in 0..( terminal_x as i32 - percentage(terminal_x as i32, 40) as i32 - 1) {
         window_map[terminal_y as usize][( i + 1 ) as usize] = String::from("─");
     }
-    for i in 0..( terminal_x as i32 - percentage(terminal_x as i32, 40,impar_x) as i32 - 1) {
+    for i in 0..( terminal_x as i32 - percentage(terminal_x as i32, 40) as i32 - 1) {
         window_map[1][( i + 1 ) as usize] = String::from("─");
     }
     
-    window_map[1][percentage(terminal_x as i32,60,impar_x) as usize] = String::from("┌");
-    window_map[terminal_y as usize][percentage(terminal_x as i32,60,impar_x) as usize] = String::from("└");
+    window_map[1][percentage(terminal_x as i32,60) as usize] = String::from("┌");
+    window_map[terminal_y as usize][percentage(terminal_x as i32,60) as usize] = String::from("└");
     
     window_map[1][terminal_x as usize] = String::from("┐");
     window_map[terminal_y as usize][terminal_x as usize] = String::from("┘");
     
-    window_map[percentage(terminal_y as i32, 60, impar_y) as usize][percentage(terminal_x as i32,60,impar_x) as usize] = String::from("└");
-    window_map[(percentage(terminal_y as i32, 60, impar_y) + 1.0) as usize][percentage(terminal_x as i32,60,impar_x) as usize] = String::from("┌");
+    window_map[percentage(terminal_y as i32, 60) as usize][percentage(terminal_x as i32,60) as usize] = String::from("└");
+    window_map[(percentage(terminal_y as i32, 60) + 1.0) as usize][percentage(terminal_x as i32,60) as usize] = String::from("┌");
     
-    window_map[percentage(terminal_y as i32, 60, impar_y) as usize][terminal_x as usize] = String::from("┘");
-    window_map[(percentage(terminal_y as i32, 60, impar_y) + 1.0) as usize][terminal_x as usize] = String::from("┐");
+    window_map[percentage(terminal_y as i32, 60) as usize][terminal_x as usize] = String::from("┘");
+    window_map[(percentage(terminal_y as i32, 60,) + 1.0) as usize][terminal_x as usize] = String::from("┐");
     
     window_map[1][1] = String::from("┌");
     window_map[terminal_y as usize][1] = String::from("└");
     
-    window_map[1][(percentage(terminal_x as i32,60,impar_x)-1.0) as usize] = String::from("┐");
-    window_map[terminal_y as usize][(percentage(terminal_x as i32,60,impar_x)-1.0) as usize] = String::from("┘");
+    window_map[1][(percentage(terminal_x as i32,60)-1.0) as usize] = String::from("┐");
+    window_map[terminal_y as usize][(percentage(terminal_x as i32,60)-1.0) as usize] = String::from("┘");
 
 
     
@@ -455,8 +468,12 @@ fn put_hardware_lines_map (window_map: &mut Vec<Vec<String>>, terminal_x: u16, t
     // }
 }
 
-fn percentage (number: i32, percent: i32, impar: i32) -> f32 {
-    ((number + impar) as f32 / 100.0) * percent as f32
+fn percentage (number: i32, percent: i32) -> f32 {
+    if  number % 2 == 0 {
+        (number as f32 / 100.0) * percent as f32
+    } else {
+        ((number + 1) as f32 / 100.0) * percent as f32
+    }
 }
 
 

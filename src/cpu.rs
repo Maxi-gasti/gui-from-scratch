@@ -5,6 +5,20 @@ struct CpuCoreInfo {
     hertz: u16,
 }
 
+pub fn cpu_core_num_info () -> u16 {
+    let mut core_num: u16 = 0;
+
+    if let Ok(cpuinfo) = fs::read_to_string("/proc/cpuinfo") {
+        for line in cpuinfo.lines() {
+            if line.starts_with("processor") {
+                core_num += 1;
+                
+            }
+        }
+    }
+    core_num
+}
+
 pub fn cpu_info(height: u16) -> String {
     // Funcion para obtener la info del cpu que requiere hardware_menu
     
