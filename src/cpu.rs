@@ -16,6 +16,7 @@ pub fn cpu_core_num_info () -> u16 {
             }
         }
     }
+    println!("{}",core_num);
     core_num
 }
 
