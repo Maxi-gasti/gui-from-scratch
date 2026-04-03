@@ -16,11 +16,16 @@ pub fn cpu_core_num_info () -> u16 {
             }
         }
     }
-    println!("{}",core_num);
     core_num
 }
 
-pub fn cpu_info(height: u16) -> String {
+pub fn cpu_get_text_width (width: u16,core_num: u16) -> i32 {
+    let mut x_scale: i32 = (width / core_num) as i32;
+    x_scale = x_scale * core_num as i32 + core_num as i32;
+    x_scale / 2
+}
+
+pub fn cpu_info(width: u16,height: u16) -> String {
     // Funcion para obtener la info del cpu que requiere hardware_menu
     
     // Cantidad procesadores
@@ -67,18 +72,25 @@ pub fn cpu_info(height: u16) -> String {
         text += &format!("{} ",cores_average[_i2] as u16);
     }
     text += &'\n'.to_string();
+    let x_scale: i32 = (width / core_num) as i32;
+    print!("{},{}",width,x_scale);
     for i in 0..height {
 
         for _i2 in 0..cores_average.len() {
             let height_percent: f32 = 100.0 - (( i as f32 / height as f32) * 100.0);
 
             if height_percent - cores_average[_i2] > 3.0 {
-                text +=  &"░░".to_string();
+                for _i3 in 0..x_scale {
+                    text +=  &"░".to_string();
+                }
             } else if height_percent - cores_average[_i2] > 1.0 {
-                text +=  &"▒▒".to_string();
+                for _i3 in 0..x_scale {
+                    text +=  &"▒".to_string();
+                }
             } else {
-                text += &"██".to_string();
-
+                for _i3 in 0..x_scale {
+                    text += &"█".to_string();
+                }
             }
             text += &" ".to_string();
 

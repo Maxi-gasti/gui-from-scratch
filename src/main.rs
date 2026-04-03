@@ -257,7 +257,7 @@ fn hardware_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, terminal_y:
     let mut clock_time: u16 = 1;  
 
     add_label_to_window(&mut window_label_hardware, create_label(
-            &cpu::cpu_info((percentage(true_y as i32,60) - 6.0) as u16),
+            &cpu::cpu_info((percentage(true_x as i32,40) - 51.0) as u16,(percentage(true_y as i32,60) - 6.0) as u16),
             Some(&{
                 let mut x = (true_x as f32 / 100.0) as f32 * 60.0 + 1.0;
                 let mut v = 0.0;
@@ -267,9 +267,8 @@ fn hardware_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, terminal_y:
                     v = (true_x as f32 / 100.0) as f32 * 40.0;
                     v = v - 20.0;
                     v = v / 2.0;
-                    v = v - (cpu::cpu_core_num_info() * 2) as f32;
                 }
-                x = x + 20.0 + v;
+                x = x + 20.0 + v - cpu::cpu_get_text_width((percentage(true_x as i32,40) - 50.0) as u16,cpu::cpu_core_num_info()) as f32;
                 x as i32 + 1
             }),
             Some(&{
@@ -362,16 +361,18 @@ fn hardware_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, terminal_y:
         }
 
         add_label_to_window(&mut window_label_hardware, create_label(
-            &cpu::cpu_info((percentage(true_y as i32,60) - 6.0) as u16),
+            &cpu::cpu_info((percentage(true_x as i32,40) - 51.0) as u16,(percentage(true_y as i32,60) - 6.0) as u16),
             Some(&{
                 let mut x = (true_x as f32 / 100.0) as f32 * 60.0 + 1.0;
                 let mut v = 0.0;
-                v = (true_x as f32 / 100.0) as f32 * 40.0;
-                v = v - 20.0;
-                v = v / 2.0;
-                v = v - (cpu::cpu_core_num_info() * 2) as f32;
-                if v <= 0.0 { v = 0.0 }
-                x = x + 20.0 + v;
+                if (true_x as f32 / 100.0) as f32 * 40.0 <= 20.0 {
+                    v = 0.0;
+                } else {
+                    v = (true_x as f32 / 100.0) as f32 * 40.0;
+                    v = v - 20.0;
+                    v = v / 2.0;
+                }
+                x = x + 20.0 + v - cpu::cpu_get_text_width((percentage(true_x as i32,40) - 50.0) as u16,cpu::cpu_core_num_info()) as f32;
                 x as i32 + 1
             }),
             Some(&{
