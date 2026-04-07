@@ -36,7 +36,7 @@ fn main() -> io::Result<()> {
 
     // This let the program to recibe raw touchs, like you not need to put a input fn to insert
     // letters.
-    let _raw_guard = RawModeGuard::new()?; // Se desactivará automáticamente al salir
+    let _raw_guard = RawModeGuard::new()?;
 
 
     let mut file_log = fs::OpenOptions::new().create(true).append(true).open("log.txt")?;
@@ -211,6 +211,7 @@ fn main() -> io::Result<()> {
 fn hardware_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, terminal_y: &mut u16) -> io::Result<()> {
     
     let select_hardware = 0;
+    let mut clock_time: u16 = 1;  
 
     let mut true_x = *terminal_x - 2;
     let mut true_y = *terminal_y - 2;
@@ -218,7 +219,6 @@ fn hardware_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, terminal_y:
     // Clon of window_map for not touch the main window_label.
     let mut window_label_hardware = window_map.clone();
     put_hardware_lines_map(&mut window_label_hardware,true_x,true_y);
-
 
     let mut vec_label_hardware = vec![
         create_label(
@@ -249,12 +249,9 @@ fn hardware_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, terminal_y:
             Some(models::LabelStyle::Edges))
     ];
 
-
     let mut vec_label_hardware_select = define_select_labels(&vec_label_hardware);
 
     window_label_hardware = label_window(&window_label_hardware,select_hardware, &vec_label_hardware,&vec_label_hardware_select,*terminal_x,*terminal_y);
-
-    let mut clock_time: u16 = 1;  
 
     add_label_to_window(&mut window_label_hardware, create_label(
             &cpu::cpu_info((percentage(true_x as i32,40) - 51.0) as u16,(percentage(true_y as i32,60) - 6.0) as u16),

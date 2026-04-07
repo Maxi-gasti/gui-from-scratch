@@ -46,7 +46,6 @@ pub fn cpu_info(width: u16,height: u16) -> String {
     let mut core_num: u16 = 0;
     let mut text = String::new();
     let mut cores_average: Vec<f32> = Vec::new();
-    
 
     if let Ok(cpuinfo) = fs::read_to_string("/proc/cpuinfo") {
         for line in cpuinfo.lines() {
@@ -82,32 +81,13 @@ pub fn cpu_info(width: u16,height: u16) -> String {
             }
         }
     }
-    
-    // how many char can be in the width
-    let x_scale: i32 = {
-        let mut temp_count: i32 = 0;
-        let mut scale: u16 = 0;
-        loop {
-            temp_count = temp_count + core_num as i32;
-            
-            if width > temp_count as u16 {
-                scale += 1;
-            } else {
-                break;
-            }
-        }
-        scale as i32
-    };
 
     for _i2 in 0..cores_average.len() {
         text += &format!("{} ",cores_average[_i2] as u16);
-        for i in 0..(x_scale-2) {
-            text += &" ".to_string();
-        }
     }
-
     text += &'\n'.to_string();
-
+    let x_scale: i32 = (width / core_num) as i32;
+    print!("{},{}",width,x_scale);
     for i in 0..height {
 
         for _i2 in 0..cores_average.len() {
@@ -134,9 +114,6 @@ pub fn cpu_info(width: u16,height: u16) -> String {
 
     for i in 0..cores_average.len() {
         text += &format!("C{} ",i);
-        for i in 0..(x_scale-2) {
-            text += &" ".to_string();
-        }
     }
 
     text
