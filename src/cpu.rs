@@ -1,10 +1,5 @@
 use std::fs;
 
-struct CpuCoreInfo {
-    core_number: u16,
-    hertz: u16,
-}
-
 pub fn cpu_core_num_info () -> u16 {
     let mut core_num: u16 = 0;
 
