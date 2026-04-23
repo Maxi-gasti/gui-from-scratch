@@ -218,6 +218,7 @@ fn hardware_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, terminal_y:
     let mut true_y = *terminal_y - 2;
     
     let _test = memory::ram_info((percentage(true_x as i32,60) - 2.0) as u16, (percentage(true_y as i32,20)-2.0) as u16);
+    let _disk_test = memory::disk_info((percentage(true_x as i32,60) - 2.0) as u16, (percentage(true_y as i32,20)-2.0) as u16); 
     
     // Clon of window_map for not touch the main window_label.
     let mut window_label_hardware = window_map.clone();
@@ -264,7 +265,7 @@ fn hardware_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, terminal_y:
         Some(models::LabelStyle::Text)
     ));
     add_label_to_window(&mut window_label_hardware, create_label(
-        &memory::ram_info((percentage(true_x as i32,60) - 2.0) as u16, (percentage(true_y as i32,20)-6.0) as u16), // la unica forma de quitar los espacios entre las diagonales es sumandoles un -2
+        &memory::disk_info((percentage(true_x as i32,60) - 2.0) as u16, (percentage(true_y as i32,20)-6.0) as u16), // la unica forma de quitar los espacios entre las diagonales es sumandoles un -2
         Some(&(3 as i32)),
         Some(&{
             percentage(true_y as i32, 20) as i32 + 3
@@ -385,7 +386,7 @@ fn hardware_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, terminal_y:
             Some(models::LabelStyle::Text)
         ));
         add_label_to_window(&mut window_label_hardware, create_label(
-            &memory::ram_info((percentage(true_x as i32,60) - 2.0) as u16, (percentage(true_y as i32,20)-6.0) as u16), // la unica forma de quitar los espacios entre las diagonales es sumandoles un -2
+            &memory::disk_info((percentage(true_x as i32,60) - 2.0) as u16, (percentage(true_y as i32,20)-6.0) as u16), // la unica forma de quitar los espacios entre las diagonales es sumandoles un -2
             Some(&(3 as i32)),
             Some(&{
                 percentage(true_y as i32, 20) as i32 + 3
