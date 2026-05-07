@@ -13,7 +13,7 @@ fn get_total_ram () -> i32 {
                 
                 // Get the actual Memory Space.
                 let mut total: String = String::new();
-                for (i,c) in line.chars().enumerate() {
+                for (_i,c) in line.chars().enumerate() {
                     if c.is_ascii_digit() {
                         total.push(c);
                     }
@@ -40,7 +40,7 @@ fn get_current_ram () -> i32 {
                 
                 // Get the actual Memory Space .
                 let mut total: String = String::new();
-                for (i,c) in line.chars().enumerate() {
+                for (_i,c) in line.chars().enumerate() {
                     if c.is_ascii_digit() {
                         total.push(c);
                     }
@@ -74,7 +74,7 @@ fn get_free_ram () -> i32 {
                 
                 // Get the actual Memory Space .
                 let mut total: String = String::new();
-                for (i,c) in line.chars().enumerate() {
+                for (_i,c) in line.chars().enumerate() {
                     if c.is_ascii_digit() {
                         total.push(c);
                     }
@@ -110,7 +110,7 @@ pub fn ram_info (width: u16,height: u16) -> String {
     let percentage = get_percentage_ram();
 
     text = text + &String::from("Used:      ");
-    for i in 0..y_scale {
+    for _i in 0..y_scale {
         for i2 in 0..(width - 11 - 3) {
             let width_percentage = 100.0 - ((i2 as f32 / width as f32) * 100.0);
             if (width_percentage - percentage as f32) > 5.0 {

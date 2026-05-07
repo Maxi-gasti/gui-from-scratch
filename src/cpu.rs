@@ -53,7 +53,7 @@ pub fn cpu_info(width: u16,height: u16) -> String {
 
                 // Get the actual Cpu MHZ.
                 let mut hz_actual: String = String::new();
-                for (i,c) in line.chars().enumerate() {
+                for (_i,c) in line.chars().enumerate() {
                     if c.is_ascii_digit() || c == '.' {
                         hz_actual.push(c);
                     }
@@ -98,7 +98,7 @@ pub fn cpu_info(width: u16,height: u16) -> String {
         text += &format!("{} ",cores_average[_i2] as u16);
         // This is interesting because in rust, if the range is 0..(negative number) it will not do
         // nothing only if the number is more than 0
-        for i in 0..(x_scale-2+1) {
+        for _i in 0..(x_scale-2+1) {
             text += &" ".to_string();
         }
     }
@@ -134,7 +134,7 @@ pub fn cpu_info(width: u16,height: u16) -> String {
 
     for i in 0..cores_average.len() {
         text += &format!("C{} ",i);
-        for i in 0..(x_scale-2+1) {
+        for _i in 0..(x_scale-2+1) {
             text += &" ".to_string();
         }
     }

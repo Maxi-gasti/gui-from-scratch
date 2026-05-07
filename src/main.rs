@@ -449,32 +449,31 @@ fn put_hardware_lines_map (window_map: &mut Vec<Vec<String>>, terminal_x: u16, t
     if terminal_x % 2 != 0 { impar_x += 1; }
     if terminal_y % 2 != 0 { impar_y += 1; }
     
-    // Y
-    
-    for i in 0..(terminal_y - 2) {
-        window_map[(2+i as i32) as usize][percentage(terminal_x as i32,60) as usize] = String::from("│");
-    }
-    for i in 0..(terminal_y - 2) {
-        window_map[(2+i as i32) as usize][terminal_x as usize] = String::from("│");
-    }
-    for i in 0..(terminal_y - 2) {
-        window_map[(2+i as i32) as usize][1 as usize] = String::from("│");
-    }
-    for i in 0..(terminal_y - 2) {
-        window_map[(2+i as i32) as usize][(percentage(terminal_x as i32,60) - 1.0) as usize] = String::from("│");
-    }
-    
     // X
 
+    for i in 0..( terminal_x as i32 - percentage(terminal_x as i32, 40) as i32 - 1) {
+        window_map[1][( i + 1 ) as usize] = String::from("─");
+    }
+    for i in 0..( terminal_x as i32 - percentage(terminal_x as i32, 60) as i32 - 1) {
+        window_map[1][(percentage(terminal_x as i32,60) as i32 + i + 1 ) as usize] = String::from("─");
+    }
+    for i in 0..( terminal_x as i32 - percentage(terminal_x as i32, 40) as i32 - 1) {
+        window_map[percentage(terminal_y as i32,20) as usize][( i + 1 ) as usize] = String::from("─");
+    }
+    for i in 0..( terminal_x as i32 - percentage(terminal_x as i32, 40) as i32 - 1) {
+        window_map[(percentage(terminal_y as i32,20) + 1.0) as usize][( i + 1 ) as usize] = String::from("─");
+    }
+    for i in 0..( terminal_x as i32 - percentage(terminal_x as i32, 40) as i32 - 1) {
+        window_map[(percentage(terminal_y as i32,40)) as usize][( i + 1 ) as usize] = String::from("─");
+    }
+    for i in 0..( terminal_x as i32 - percentage(terminal_x as i32, 40) as i32 - 1) {
+        window_map[(percentage(terminal_y as i32,40) + 1.0) as usize][( i + 1 ) as usize] = String::from("─");
+    }
     for i in 0..( terminal_x as i32 - percentage(terminal_x as i32, 60) as i32 - 1) {
         window_map[percentage(terminal_y as i32, 60) as usize][(percentage(terminal_x as i32,60) as i32 + i + 1 ) as usize] = String::from("─");
     }
     for i in 0..( terminal_x as i32 - percentage(terminal_x as i32, 60) as i32 - 1) {
         window_map[(percentage(terminal_y as i32, 60) + 1.0) as usize][(percentage(terminal_x as i32,60) as i32 + i + 1 ) as usize] = String::from("─");
-    }
-    
-    for i in 0..( terminal_x as i32 - percentage(terminal_x as i32, 60) as i32 - 1) {
-        window_map[1][(percentage(terminal_x as i32,60) as i32 + i + 1 ) as usize] = String::from("─");
     }
     for i in 0..( terminal_x as i32 - percentage(terminal_x as i32, 60) as i32 - 1) {
         window_map[terminal_y as usize][(percentage(terminal_x as i32,60) as i32 + i + 1 ) as usize] = String::from("─");
@@ -482,22 +481,20 @@ fn put_hardware_lines_map (window_map: &mut Vec<Vec<String>>, terminal_x: u16, t
     for i in 0..( terminal_x as i32 - percentage(terminal_x as i32, 40) as i32 - 1) {
         window_map[terminal_y as usize][( i + 1 ) as usize] = String::from("─");
     }
-    for i in 0..( terminal_x as i32 - percentage(terminal_x as i32, 40) as i32 - 1) {
-        window_map[1][( i + 1 ) as usize] = String::from("─");
-    }
     
-    for i in 0..( terminal_x as i32 - percentage(terminal_x as i32, 40) as i32 - 1) {
-        window_map[(percentage(terminal_y as i32,40)) as usize][( i + 1 ) as usize] = String::from("─");
-    }
-    for i in 0..( terminal_x as i32 - percentage(terminal_x as i32, 40) as i32 - 1) {
-        window_map[(percentage(terminal_y as i32,40) + 1.0) as usize][( i + 1 ) as usize] = String::from("─");
-    }
+    // Y
     
-    for i in 0..( terminal_x as i32 - percentage(terminal_x as i32, 40) as i32 - 1) {
-        window_map[percentage(terminal_y as i32,20) as usize][( i + 1 ) as usize] = String::from("─");
+    for i in 0..(terminal_y - 2) {
+        window_map[(2+i as i32) as usize][1 as usize] = String::from("│");
     }
-    for i in 0..( terminal_x as i32 - percentage(terminal_x as i32, 40) as i32 - 1) {
-        window_map[(percentage(terminal_y as i32,20) + 1.0) as usize][( i + 1 ) as usize] = String::from("─");
+    for i in 0..(terminal_y - 2) {
+        window_map[(2+i as i32) as usize][percentage(terminal_x as i32,60) as usize] = String::from("│");
+    }
+    for i in 0..(terminal_y - 2) {
+        window_map[(2+i as i32) as usize][(percentage(terminal_x as i32,60) - 1.0) as usize] = String::from("│");
+    }
+    for i in 0..(terminal_y - 2) {
+        window_map[(2+i as i32) as usize][terminal_x as usize] = String::from("│");
     }
     
     window_map[1][percentage(terminal_x as i32,60) as usize] = String::from("┌");
@@ -530,9 +527,6 @@ fn put_hardware_lines_map (window_map: &mut Vec<Vec<String>>, terminal_x: u16, t
     window_map[percentage(terminal_y as i32,20) as usize][1 as usize] = String::from("└");
     window_map[(percentage(terminal_y as i32,20) + 1.0) as usize][1 as usize] = String::from("┌");
     
-    // for i in 0..(terminal_y-2) {
-    //
-    // }
 }
 
 fn percentage (number: i32, percent: i32) -> f32 {
