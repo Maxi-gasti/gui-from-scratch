@@ -258,17 +258,17 @@ fn hardware_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, terminal_y:
     window_label_hardware = label_window(&window_label_hardware,select_hardware, &vec_label_hardware,&vec_label_hardware_select,*terminal_x,*terminal_y);
     
     add_label_to_window(&mut window_label_hardware, create_label(
-        &memory::ram_info((percentage(true_x as i32,60) - 2.0) as u16, (percentage(true_y as i32,20)-6.0) as u16), // la unica forma de quitar los espacios entre las diagonales es sumandoles un -2
+        &memory::ram_info((percentage(true_x as i32,60) - 2.0) as u16, (percentage(true_y as i32,20)-4.0) as u16), // la unica forma de quitar los espacios entre las diagonales es sumandoles un -2
         Some(&(3 as i32)),
-        Some(&(3 as i32)),
+        Some(&(2 as i32)),
         Some(models::LabelType::Text),
         Some(models::LabelStyle::Text)
     ));
     add_label_to_window(&mut window_label_hardware, create_label(
-        &memory::disk_info((percentage(true_x as i32,60) - 2.0) as u16, (percentage(true_y as i32,20)-6.0) as u16), // la unica forma de quitar los espacios entre las diagonales es sumandoles un -2
+        &memory::disk_info((percentage(true_x as i32,60) - 2.0) as u16, (percentage(true_y as i32,20)-3.0) as u16), // la unica forma de quitar los espacios entre las diagonales es sumandoles un -2
         Some(&(3 as i32)),
         Some(&{
-            percentage(true_y as i32, 20) as i32 + 3
+            percentage(true_y as i32, 20) as i32 + 2
         }),
         Some(models::LabelType::Text),
         Some(models::LabelStyle::Text)
@@ -379,17 +379,17 @@ fn hardware_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, terminal_y:
         }
 
         add_label_to_window(&mut window_label_hardware, create_label(
-            &memory::ram_info((percentage(true_x as i32,60) - 2.0) as u16, (percentage(true_y as i32,20)-6.0) as u16), // la unica forma de quitar los espacios entre las diagonales es sumandoles un -2
+            &memory::ram_info((percentage(true_x as i32,60) - 2.0) as u16, (percentage(true_y as i32,20)-4.0) as u16), // la unica forma de quitar los espacios entre las diagonales es sumandoles un -2
             Some(&(3 as i32)),
-            Some(&(3 as i32)),
+            Some(&(2 as i32)),
             Some(models::LabelType::Text),
             Some(models::LabelStyle::Text)
         ));
         add_label_to_window(&mut window_label_hardware, create_label(
-            &memory::disk_info((percentage(true_x as i32,60) - 2.0) as u16, (percentage(true_y as i32,20)-6.0) as u16), // la unica forma de quitar los espacios entre las diagonales es sumandoles un -2
+            &memory::disk_info((percentage(true_x as i32,60) - 2.0) as u16, (percentage(true_y as i32,20)-3.0) as u16), // la unica forma de quitar los espacios entre las diagonales es sumandoles un -2
             Some(&(3 as i32)),
             Some(&{
-                percentage(true_y as i32, 20) as i32 + 3
+                percentage(true_y as i32, 20) as i32 + 2
             }),
             Some(models::LabelType::Text),
             Some(models::LabelStyle::Text)

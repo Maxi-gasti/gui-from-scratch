@@ -92,7 +92,7 @@ pub fn ram_info (width: u16,height: u16) -> String {
     let mut text: String = String::new();
 
     // Works like a drop
-    if height < 3 || (width - 11) < 0 {
+    if height + 2 < 3 || (width - 11) < 0 {
         text = "ERROR-RANGE".to_string();
         return text
     }
@@ -109,6 +109,11 @@ pub fn ram_info (width: u16,height: u16) -> String {
     
     let percentage = get_percentage_ram();
 
+    let x  =height % 3;
+    if x/2 == 1 {
+        text += &'\n'.to_string();
+    }
+
     text = text + &String::from("Used:      ");
     for _i in 0..y_scale {
         for i2 in 0..(width - 11 - 3) {
@@ -120,9 +125,8 @@ pub fn ram_info (width: u16,height: u16) -> String {
             } else {
                 text +=  &"░".to_string();
             }
-            // text = text + &String::from("█");
         }
-        if y_scale != 1 {
+        if y_scale != 1 || height >= 3{
             text += &'\n'.to_string();
             text += &String::from("           ");
         }
@@ -144,7 +148,7 @@ pub fn ram_info (width: u16,height: u16) -> String {
                 text +=  &"░".to_string();
             }
         }
-        if y_scale != 1 {
+        if y_scale != 1 || height >= 3 {
             text += &'\n'.to_string();
             text += &String::from("           ");
         }
@@ -320,7 +324,7 @@ pub fn disk_info (width: u16,height: u16) -> String {
             }
             // text = text + &String::from("█");
         }
-        if y_scale != 1 {
+        if y_scale != 1 || height >= 2 {
             text += &'\n'.to_string();
             text += &String::from("           ");
         }
