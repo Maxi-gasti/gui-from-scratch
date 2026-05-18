@@ -98,7 +98,7 @@ pub fn ram_info (width: u16,height: u16) -> String {
     }
 
     let y_scale: u16 = {
-
+        // Let make this a 3 because have 3 forms, later i will see it better.
         if (height / 3) > 0 {
             height / 3
         } else {
@@ -133,11 +133,10 @@ pub fn ram_info (width: u16,height: u16) -> String {
     }
 
     text += &'\n'.to_string();
-    let percentage = {
-        100 - get_percentage_ram()
-    };
+    let percentage = { 100 - get_percentage_ram() };
+
     text = text + &String::from("Available: ");
-    for i in 0..y_scale {
+    for _i in 0..y_scale {
         for i2 in 0..(width - 11 - 3) {
             let width_percentage = 100.0 - ((i2 as f32 / width as f32) * 100.0);
             if (width_percentage - percentage as f32) > 5.0 {
@@ -261,7 +260,7 @@ fn get_disk_used_space () -> i32 {
             // let mut in_place: i32 = false;
             let mut space: bool = true;
 
-            for (i,c) in line.chars().enumerate() {
+            for (_i,c) in line.chars().enumerate() {
                 if space == true {
                     if c != ' ' {
                         space = false;
@@ -295,6 +294,8 @@ pub fn disk_info (width: u16,height: u16) -> String {
     let mut text: String = String::new();
 
     if height < 2 || (width - 11) < 0 {
+        // Actualy i put 2 but can have issues with the normal scale. idk i dont think u will have
+        // 90 px resolution haha
         text = "ERROR-RANGE".to_string();
         return text
     }
@@ -312,7 +313,7 @@ pub fn disk_info (width: u16,height: u16) -> String {
     let percentage = 100 - get_disk_used_space();
 
     text = text + &String::from("Used:      ");
-    for i in 0..y_scale {
+    for _i in 0..y_scale {
         for i2 in 0..(width - 11 - 3) {
             let width_percentage = 100.0 - ((i2 as f32 / width as f32) * 100.0);
             if (width_percentage - percentage as f32) > 5.0 {
