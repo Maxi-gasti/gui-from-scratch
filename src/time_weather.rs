@@ -74,7 +74,7 @@ pub fn get_weather (weather: u16,frame: u16) -> String {
                  *      
      *                  
              *          
-                     *  
+*                    *  
        *                
     (\_/)               
     ( •_•)     *        
@@ -91,7 +91,7 @@ pub fn get_weather (weather: u16,frame: u16) -> String {
                   *     
       *                 
               *         
-                      * 
+ *                    * 
     (\_/)               
     ( •_•)              
     / > ❆       *       
@@ -108,7 +108,7 @@ pub fn get_weather (weather: u16,frame: u16) -> String {
                         
        *                 
                *          
-    (\_/)              *
+  * (\_/)              *
     ( •_•)              
     / > ❆               
  .-------..       *     
@@ -151,13 +151,13 @@ pub fn numbers_gui(num: u16,size: u16) -> String {
         1 => {
             for _i in 0..size {
                 for _i in 0..size {
-                    text += &"░░"
+                    text += &"  "
                 }
                 for _i in 0..size {
                     text += &"██"
                 }
                 for _i in 0..size {
-                    text += &"░░"
+                    text += &"  "
                 }
                 text += &"\n";
             }
@@ -169,31 +169,31 @@ pub fn numbers_gui(num: u16,size: u16) -> String {
                     text += &"██"
                 }
                 for _i in 0..size {
-                    text += &"░░"
+                    text += &"  "
                 }
                 text += &"\n";
             }
             for _i in 0..size {
                 for _i in 0..size {
-                    text += &"░░"
+                    text += &"  "
                 }
                 for _i in 0..size {
                     text += &"██"
                 }
                 for _i in 0..size {
-                    text += &"░░"
+                    text += &"  "
                 }
                 text += &"\n";
             }
             for _i in 0..size {
                 for _i in 0..size {
-                    text += &"░░"
+                    text += &"  "
                 }
                 for _i in 0..size {
                     text += &"██"
                 }
                 for _i in 0..size {
-                    text += &"░░"
+                    text += &"  "
                 }
                 text += &"\n";
             }
@@ -227,22 +227,10 @@ pub fn numbers_gui(num: u16,size: u16) -> String {
             }
             for _i in 0..size {
                 for _i in 0..size {
-                    text += &"░░"
+                    text += &"  "
                 }
                 for _i in 0..size {
-                    text += &"░░"
-                }
-                for _i in 0..size {
-                    text += &"██"
-                }
-                text += &"\n";
-            }
-            for _i in 0..size {
-                for _i in 0..size {
-                    text += &"██"
-                }
-                for _i in 0..size {
-                    text += &"██"
+                    text += &"  "
                 }
                 for _i in 0..size {
                     text += &"██"
@@ -254,10 +242,22 @@ pub fn numbers_gui(num: u16,size: u16) -> String {
                     text += &"██"
                 }
                 for _i in 0..size {
-                    text += &"░░"
+                    text += &"██"
                 }
                 for _i in 0..size {
-                    text += &"░░"
+                    text += &"██"
+                }
+                text += &"\n";
+            }
+            for _i in 0..size {
+                for _i in 0..size {
+                    text += &"██"
+                }
+                for _i in 0..size {
+                    text += &"  "
+                }
+                for _i in 0..size {
+                    text += &"  "
                 }
                 text += &"\n";
             }
@@ -292,10 +292,10 @@ pub fn numbers_gui(num: u16,size: u16) -> String {
                 }
                 for _i in 0..size {
                     for _i in 0..size {
-                        text += &"░░"
+                        text += &"  "
                     }
                     for _i in 0..size {
-                        text += &"░░"
+                        text += &"  "
                         }
                     for _i in 0..size {
                         text += &"██"
@@ -325,7 +325,7 @@ pub fn numbers_gui(num: u16,size: u16) -> String {
                         text += &"██"
                     }
                     for _i in 0..size {
-                        text += &"░░"
+                        text += &"  "
                     }
                     for _i in 0..size {
                         text += &"██"
@@ -347,10 +347,10 @@ pub fn numbers_gui(num: u16,size: u16) -> String {
             }
             for _i in 0..size {
                 for _i in 0..size {
-                    text += &"░░"
+                    text += &"  "
                 }
                 for _i in 0..size {
-                    text += &"░░"
+                    text += &"  "
                 }
                 for _i in 0..size {
                     text += &"██"
@@ -359,10 +359,10 @@ pub fn numbers_gui(num: u16,size: u16) -> String {
             }
             for i in 0..size {
                 for _i in 0..size {
-                    text += &"░░"
+                    text += &"  "
                 }
                 for _i in 0..size {
-                    text += &"░░"
+                    text += &"  "
                 }
                 for _i in 0..size {
                     text += &"██"
@@ -390,31 +390,31 @@ pub fn numbers_gui(num: u16,size: u16) -> String {
                     text += &"██"
                 }
                 for _i in 0..size {
-                    text += &"░░"
+                    text += &"  "
                 }
                 for _i in 0..size {
-                    text += &"░░"
-                }
-                text += &"\n";
-            }
-            for _i in 0..size {
-                for _i in 0..size {
-                    text += &"██"
-                }
-                for _i in 0..size {
-                    text += &"██"
-                }
-                for _i in 0..size {
-                    text += &"██"
+                    text += &"  "
                 }
                 text += &"\n";
             }
             for _i in 0..size {
                 for _i in 0..size {
-                    text += &"░░"
+                    text += &"██"
                 }
                 for _i in 0..size {
-                    text += &"░░"
+                    text += &"██"
+                }
+                for _i in 0..size {
+                    text += &"██"
+                }
+                text += &"\n";
+            }
+            for _i in 0..size {
+                for _i in 0..size {
+                    text += &"  "
+                }
+                for _i in 0..size {
+                    text += &"  "
                 }
                 for _i in 0..size {
                     text += &"██"
@@ -454,22 +454,10 @@ pub fn numbers_gui(num: u16,size: u16) -> String {
                     text += &"██"
                 }
                 for _i in 0..size {
-                    text += &"░░"
+                    text += &"  "
                 }
                 for _i in 0..size {
-                    text += &"░░"
-                }
-                text += &"\n";
-            }
-            for _i in 0..size {
-                for _i in 0..size {
-                    text += &"██"
-                }
-                for _i in 0..size {
-                    text += &"██"
-                }
-                for _i in 0..size {
-                    text += &"██"
+                    text += &"  "
                 }
                 text += &"\n";
             }
@@ -478,7 +466,19 @@ pub fn numbers_gui(num: u16,size: u16) -> String {
                     text += &"██"
                 }
                 for _i in 0..size {
-                    text += &"░░"
+                    text += &"██"
+                }
+                for _i in 0..size {
+                    text += &"██"
+                }
+                text += &"\n";
+            }
+            for _i in 0..size {
+                for _i in 0..size {
+                    text += &"██"
+                }
+                for _i in 0..size {
+                    text += &"  "
                 }
                 for _i in 0..size {
                     text += &"██"
@@ -516,10 +516,10 @@ pub fn numbers_gui(num: u16,size: u16) -> String {
             for _i in 0..3 {
                 for _i in 0..size {
                     for _i in 0..size {
-                        text += &"░░"
+                        text += &"  "
                     }
                     for _i in 0..size {
-                        text += &"░░"
+                        text += &"  "
                     }
                     for _i in 0..size {
                         text += &"██"
@@ -529,10 +529,10 @@ pub fn numbers_gui(num: u16,size: u16) -> String {
             }
             for i in 0..size {
                 for _i in 0..size {
-                    text += &"░░"
+                    text += &"  "
                 }
                 for _i in 0..size {
-                    text += &"░░"
+                    text += &"  "
                 }
                 for _i in 0..size {
                     text += &"██"
@@ -562,7 +562,7 @@ pub fn numbers_gui(num: u16,size: u16) -> String {
                         text += &"██"
                     }
                     for _i in 0..size {
-                        text += &"░░"
+                        text += &"  "
                     }
                     for _i in 0..size {
                         text += &"██"
@@ -604,7 +604,7 @@ pub fn numbers_gui(num: u16,size: u16) -> String {
                     text += &"██"
                 }
                 for _i in 0..size {
-                    text += &"░░"
+                    text += &"  "
                 }
                 for _i in 0..size {
                     text += &"██"
@@ -625,10 +625,10 @@ pub fn numbers_gui(num: u16,size: u16) -> String {
             }
             for _i in 0..size {
                 for _i in 0..size {
-                    text += &"░░"
+                    text += &"  "
                 }
                 for _i in 0..size {
-                    text += &"░░"
+                    text += &"  "
                 }
                 for _i in 0..size {
                     text += &"██"
@@ -637,10 +637,10 @@ pub fn numbers_gui(num: u16,size: u16) -> String {
             }
             for i in 0..size {
                 for _i in 0..size {
-                    text += &"░░"
+                    text += &"  "
                 }
                 for _i in 0..size {
-                    text += &"░░"
+                    text += &"  "
                 }
                 for _i in 0..size {
                     text += &"██"
@@ -670,7 +670,7 @@ pub fn numbers_gui(num: u16,size: u16) -> String {
                         text += &"██"
                     }
                     for _i in 0..size {
-                        text += &"░░"
+                        text += &"  "
                     }
                     for _i in 0..size {
                         text += &"██"
@@ -693,6 +693,71 @@ pub fn numbers_gui(num: u16,size: u16) -> String {
                 }
             }
         },
+        11 => {
+            for _i in 0..size {
+                for _i in 0..size {
+                    text += &"░░"
+                }
+                for _i in 0..size {
+                    text += &"░░"
+                }
+                for _i in 0..size {
+                    text += &"░░"
+                }
+                text += &"\n";
+            }
+            for _i in 0..size {
+                for _i in 0..size {
+                    text += &"░░"
+                }
+                for _i in 0..size {
+                    text += &"██"
+                }
+                for _i in 0..size {
+                    text += &"░░"
+                }
+                text += &"\n";
+            }
+            for _i in 0..size {
+                for _i in 0..size {
+                    text += &"░░"
+                }
+                for _i in 0..size {
+                    text += &"░░"
+                }
+                for _i in 0..size {
+                    text += &"░░"
+                }
+                text += &"\n";
+            }
+            for _i in 0..size {
+                for _i in 0..size {
+                    text += &"░░"
+                }
+                for _i in 0..size {
+                    text += &"██"
+                }
+                for _i in 0..size {
+                    text += &"░░"
+                }
+                text += &"\n";
+            }
+            for i in 0..size {
+                for _i in 0..size {
+                    text += &"░░"
+                }
+                for _i in 0..size {
+                    text += &"░░"
+                }
+                for _i in 0..size {
+                    text += &"░░"
+                }
+                if i != size {
+                    text += &"\n";
+                }
+            }
+
+        }
         _ => {text = "aa".to_string()}
     }
 

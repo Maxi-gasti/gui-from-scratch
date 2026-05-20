@@ -92,7 +92,7 @@ pub fn ram_info (width: u16,height: u16) -> String {
     let mut text: String = String::new();
 
     // Works like a drop
-    if height + 2 < 3 || (width - 11) < 0 {
+    if height + 2 < 3 || (width - 13) < 0 {
         text = "ERROR-RANGE".to_string();
         return text
     }
@@ -109,63 +109,210 @@ pub fn ram_info (width: u16,height: u16) -> String {
     
     let percentage = get_percentage_ram();
 
-    let x  =height % 3;
+    // if we have 2 spaces left we add \n to center!
+    let x = height % 3;
     if x/2 == 1 {
         text += &'\n'.to_string();
     }
+    let true_width: u16 = width - 14;
 
-    text = text + &String::from("Used:      ");
-    for _i in 0..y_scale {
-        for i2 in 0..(width - 11 - 3) {
-            let width_percentage = 100.0 - ((i2 as f32 / width as f32) * 100.0);
-            if (width_percentage - percentage as f32) > 5.0 {
-                text = text + &String::from("█");
-            } else if (width_percentage - percentage as f32) > 2.5 {
-                text +=  &"▒".to_string();
-            } else {
-                text +=  &"░".to_string();
+    if y_scale > 1 {
+        let true_width: u16 = width -3;
+        text = text + &format!(" [ Used: {}% ]",percentage);
+        text = text + &'\n'.to_string();
+        for _i in 0..(y_scale-1) {
+            for i2 in 0..true_width {
+                if i2 == 0 {
+                    text = text + &String::from("|");
+                } else {
+                    // This is the percentage of the NEXT(+1) so we can predict when it gonna change.
+                    // And added another because the for starts in 0 (+2).
+                    let width_percentage = 100.0 - (((i2 as f32 + 2.0) / true_width as f32) * 100.0);
+                    if (width_percentage - percentage as f32) > 0.0 {               
+                        text = text + &String::from("—");
+                    } else {
+                        let width_percentage = 100.0 - (((i2 as f32 + 1.0) / true_width as f32) * 100.0);
+                        if (width_percentage - percentage as f32) > 0.0 {
+                            text = text + &String::from("►");
+                        } else {
+                            if width_percentage == 0.0 {
+                                text = text + &String::from("|");
+                            } else {
+                                text = text + &String::from("–");
+                            }
+                        }
+                    }
+                }
+            }
+            if y_scale != 1 || height >= 3{
+                text += &'\n'.to_string();
             }
         }
-        if y_scale != 1 || height >= 3{
-            text += &'\n'.to_string();
-            text += &String::from("           ");
-        }
-    }
-
-    text += &'\n'.to_string();
-    let percentage = { 100 - get_percentage_ram() };
-
-    text = text + &String::from("Available: ");
-    for _i in 0..y_scale {
-        for i2 in 0..(width - 11 - 3) {
-            let width_percentage = 100.0 - ((i2 as f32 / width as f32) * 100.0);
-            if (width_percentage - percentage as f32) > 5.0 {
-                text = text + &String::from("█");
-            } else if (width_percentage - percentage as f32) > 2.5 {
-                text +=  &"▒".to_string();
-            } else {
-                text +=  &"░".to_string();
+        text += &'\n'.to_string();
+        let percentage = { 100 - get_percentage_ram() };
+        
+        text = text + &format!(" [ Available: {} ]",percentage);
+        text = text + &'\n'.to_string();
+        for _i in 0..(y_scale-1) {
+            for i2 in 0..true_width {
+                if i2 == 0 {
+                    text = text + &String::from("|");
+                } else {
+                    // This is the percentage of the NEXT(+1) so we can predict when it gonna change.
+                    // And added another because the for starts in 0.
+                    let width_percentage = 100.0 - (((i2 as f32 + 2.0) / true_width as f32) * 100.0);
+                    if (width_percentage - percentage as f32) > 0.0 {               
+                        text = text + &String::from("—");
+                    } else {
+                        // WHis is the percentage of the now.
+                        let width_percentage = 100.0 - (((i2 as f32 + 1.0) / true_width as f32) * 100.0);
+                        if (width_percentage - percentage as f32) > 0.0 {
+                            text = text + &String::from("►");
+                        } else {
+                            if width_percentage == 0.0 {
+                                text = text + &String::from("|");
+                            } else {
+                                text = text + &String::from("–");
+                            }
+                        }
+                    }
+                }
+            }
+            if y_scale != 1 || height >= 3 {
+                text += &'\n'.to_string();
             }
         }
-        if y_scale != 1 || height >= 3 {
-            text += &'\n'.to_string();
-            text += &String::from("           ");
+        
+        text += &'\n'.to_string();
+        let percentage = {
+            100 - (get_free_ram()*100)/ get_total_ram()
+        };
+        text = text + &format!(" [ Free: {} ]",percentage);
+        text = text + &'\n'.to_string();
+        
+        for i in 0..(y_scale-1) {
+            for i2 in 0..true_width {
+                if i2 == 0 {
+                    text = text + &String::from("|");
+                } else {
+                    // This is the percentage of the NEXT(+1) so we can predict when it gonna change.
+                    // And added another because the for starts in 0.
+                    let width_percentage = 100.0 - (((i2 as f32 + 2.0) / true_width as f32) * 100.0);
+                    if (width_percentage - percentage as f32) > 0.0 {               
+                        text = text + &String::from("—");
+                    } else {
+                        // WHis is the percentage of the now.
+                        let width_percentage = 100.0 - (((i2 as f32 + 1.0) / true_width as f32) * 100.0);
+                        if (width_percentage - percentage as f32) > 0.0 {
+                            text = text + &String::from("►");
+                        } else {
+                            if width_percentage == 0.0 {
+                                text = text + &String::from("|");
+                            } else {
+                                text = text + &String::from("–");
+                            }
+                        }
+                    }
+                }
+            }
+            if i != (y_scale -1) {
+                text += &'\n'.to_string();
+            }
         }
-    }
+    } else {
+        text = text + &String::from("Used:      ");
+        for _i in 0..y_scale {
+            for i2 in 0..true_width {
+                if i2 == 0 {
+                    text = text + &String::from("|");
+                } else {
+                    // This is the percentage of the NEXT(+1) so we can predict when it gonna change.
+                    // And added another because the for starts in 0 (+2).
+                    let width_percentage = 100.0 - (((i2 as f32 + 2.0) / true_width as f32) * 100.0);
+                    if (width_percentage - percentage as f32) > 0.0 {               
+                        text = text + &String::from("—");
+                    } else {
+                        let width_percentage = 100.0 - (((i2 as f32 + 1.0) / true_width as f32) * 100.0);
+                        if (width_percentage - percentage as f32) > 0.0 {
+                            text = text + &String::from("►");
+                        } else {
+                            if width_percentage == 0.0 {
+                                text = text + &String::from("|");
+                            } else {
+                                text = text + &String::from("–");
+                            }
+                        }
+                    }
+                }
+            }
+            if y_scale != 1 || height >= 3{
+                text += &'\n'.to_string();
+                text += &String::from("           ");
+            }
+        }
+        
+        text += &'\n'.to_string();
+        let percentage = { 100 - get_percentage_ram() };
+        
+        text = text + &String::from("Available: ");
+        for _i in 0..y_scale {
+            for i2 in 0..true_width {
+                if i2 == 0 {
+                    text = text + &String::from("|");
+                } else {
+                    // This is the percentage of the NEXT(+1) so we can predict when it gonna change.
+                    // And added another because the for starts in 0.
+                    let width_percentage = 100.0 - (((i2 as f32 + 2.0) / true_width as f32) * 100.0);
+                    if (width_percentage - percentage as f32) > 0.0 {               
+                        text = text + &String::from("—");
+                    } else {
+                        // WHis is the percentage of the now.
+                        let width_percentage = 100.0 - (((i2 as f32 + 1.0) / true_width as f32) * 100.0);
+                        if (width_percentage - percentage as f32) > 0.0 {
+                            text = text + &String::from("►");
+                        } else {
+                            if width_percentage == 0.0 {
+                                text = text + &String::from("|");
+                            } else {
+                                text = text + &String::from("–");
+                            }
+                        }
+                    }
+                }
+            }
+            if y_scale != 1 || height >= 3 {
+                text += &'\n'.to_string();
+                text += &String::from("           ");
+            }
+        }
     text += &'\n'.to_string();
     let percentage = {
         100 - (get_free_ram()*100)/ get_total_ram()
     };
     text = text + &String::from("Free:      ");
     for i in 0..y_scale {
-        for i2 in 0..(width - 11 - 3) {
-            let width_percentage = 100.0 - ((i2 as f32 / width as f32) * 100.0);
-            if (width_percentage - percentage as f32) > 5.0 {
-                text = text + &String::from("█");
-            } else if (width_percentage - percentage as f32) > 2.5 {
-                text +=  &"▒".to_string();
+        for i2 in 0..true_width {
+            if i2 == 0 {
+                text = text + &String::from("|");
             } else {
-                text +=  &"░".to_string();
+                // This is the percentage of the NEXT(+1) so we can predict when it gonna change.
+                // And added another because the for starts in 0.
+                let width_percentage = 100.0 - (((i2 as f32 + 2.0) / true_width as f32) * 100.0);
+                if (width_percentage - percentage as f32) > 0.0 {               
+                    text = text + &String::from("—");
+                } else {
+                    // WHis is the percentage of the now.
+                    let width_percentage = 100.0 - (((i2 as f32 + 1.0) / true_width as f32) * 100.0);
+                    if (width_percentage - percentage as f32) > 0.0 {
+                        text = text + &String::from("►");
+                    } else {
+                        if width_percentage == 0.0 {
+                            text = text + &String::from("|");
+                        } else {
+                            text = text + &String::from("–");
+                        }
+                    }
+                }
             }
         }
         if i != (y_scale -1) {
@@ -173,6 +320,8 @@ pub fn ram_info (width: u16,height: u16) -> String {
             text += &String::from("           ");
         }
     }
+    }
+
 
     text
 }

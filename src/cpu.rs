@@ -91,11 +91,14 @@ pub fn cpu_info(width: u16,height: u16) -> String {
                 break;
             }
         }
+
         scale as i32
     };
 
     for _i2 in 0..cores_average.len() {
-        text += &format!("{} ",cores_average[_i2] as u16);
+        if x_scale != 0 {
+            text += &format!("{} ",cores_average[_i2] as u16);
+        }
         // This is interesting because in rust, if the range is 0..(negative number) it will not do
         // nothing only if the number is more than 0
         for _i in 0..(x_scale-2+1) {
@@ -133,10 +136,16 @@ pub fn cpu_info(width: u16,height: u16) -> String {
     }
 
     for i in 0..cores_average.len() {
-        text += &format!("C{} ",i);
-        for _i in 0..(x_scale-2+1) {
-            text += &" ".to_string();
+        if x_scale != 0 {
+            text += &format!("C{}",i);
+            
+            for _i in 0..(x_scale) {
+                text += &" ".to_string();
+            }
+        } else {
+            text += &format!("{} ",i);
         }
+        
     }
 
     text

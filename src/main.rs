@@ -279,14 +279,14 @@ fn hardware_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, terminal_y:
     window_label_hardware = label_window(&window_label_hardware,select_hardware, &vec_label_hardware,&vec_label_hardware_select,*terminal_x,*terminal_y);
     
     add_label_to_window(&mut window_label_hardware, create_label(
-        &memory::ram_info((percentage(true_x as i32,60) - 2.0) as u16, (percentage(true_y as i32,20)-4.0) as u16), // la unica forma de quitar los espacios entre las diagonales es sumandoles un -2
+        &memory::ram_info((percentage(true_x as i32,60) - 2.0) as u16, (percentage(true_y as i32,20)-4.0) as u16), // the only way to skip the spaces from the diagonal is adding -2.
         Some(&(3 as i32)),
         Some(&(2 as i32)),
         Some(models::LabelType::Text),
         Some(models::LabelStyle::Text)
     ));
     add_label_to_window(&mut window_label_hardware, create_label(
-        &memory::disk_info((percentage(true_x as i32,60) - 2.0) as u16, (percentage(true_y as i32,20)-3.0) as u16), // la unica forma de quitar los espacios entre las diagonales es sumandoles un -2
+        &memory::disk_info((percentage(true_x as i32,60) - 2.0) as u16, (percentage(true_y as i32,20)-3.0) as u16), // the only way to skip the spaces from the diagonal is adding -2.
         Some(&(3 as i32)),
         Some(&{
             percentage(true_y as i32, 20) as i32 + 2
@@ -311,7 +311,6 @@ fn hardware_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, terminal_y:
             x as i32 + 1
         }),
         Some(&{
-            // let y = (true_y as f32 / 100.0) as f32 * 5.0;
             let y = 2;
             y as i32 + 1
         }),
@@ -400,14 +399,14 @@ fn hardware_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, terminal_y:
         }
 
         add_label_to_window(&mut window_label_hardware, create_label(
-            &memory::ram_info((percentage(true_x as i32,60) - 2.0) as u16, (percentage(true_y as i32,20)-4.0) as u16), // la unica forma de quitar los espacios entre las diagonales es sumandoles un -2
+            &memory::ram_info((percentage(true_x as i32,60) - 2.0) as u16, (percentage(true_y as i32,20)-4.0) as u16), 
             Some(&(3 as i32)),
             Some(&(2 as i32)),
             Some(models::LabelType::Text),
             Some(models::LabelStyle::Text)
         ));
         add_label_to_window(&mut window_label_hardware, create_label(
-            &memory::disk_info((percentage(true_x as i32,60) - 2.0) as u16, (percentage(true_y as i32,20)-3.0) as u16), // la unica forma de quitar los espacios entre las diagonales es sumandoles un -2
+            &memory::disk_info((percentage(true_x as i32,60) - 2.0) as u16, (percentage(true_y as i32,20)-3.0) as u16), 
             Some(&(3 as i32)),
             Some(&{
                 percentage(true_y as i32, 20) as i32 + 2
@@ -432,7 +431,6 @@ fn hardware_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, terminal_y:
                 x as i32 + 1
             }),
             Some(&{
-                // let y = (true_y as f32 / 100.0) as f32 * 5.0;
                 let y = 2;
                 y as i32 + 1
             }),
@@ -612,7 +610,7 @@ fn hour_weather_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, termina
         let num: u16 = c.to_string().parse::<u16>().unwrap();
         add_label_to_window(&mut window_label_hour, create_label(
             &time_weather::numbers_gui(num,ls as u16),
-            Some(&(center_hour + 5 + i as i32*(ls * 7))),
+            Some(&(center_hour + i as i32*(ls * 7))),
             Some(&5),
             Some(models::LabelType::Text),
             Some(models::LabelStyle::Text)
@@ -624,7 +622,7 @@ fn hour_weather_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, termina
         let num: u16 = c.to_string().parse::<u16>().unwrap();
         add_label_to_window(&mut window_label_hour, create_label(
             &time_weather::numbers_gui(num,ls as u16),
-            Some(&(center_hour+5 + i as i32*(ls * 7) + 2 * (7 * ls))),
+            Some(&(center_hour + 5 + i as i32*(ls * 7) + 2 * (7 * ls))),
             Some(&5),
             Some(models::LabelType::Text),
             Some(models::LabelStyle::Text)
@@ -636,7 +634,7 @@ fn hour_weather_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, termina
         let num: u16 = c.to_string().parse::<u16>().unwrap();
         add_label_to_window(&mut window_label_hour, create_label(
             &time_weather::numbers_gui(num,ls as u16),
-            Some(&(center_hour+5 + i as i32*(ls * 7)+ 4 * (7 * ls))),
+            Some(&(center_hour+ 10 + i as i32*(ls * 7)+ 4 * (7 * ls))),
             Some(&5),
             Some(models::LabelType::Text),
             Some(models::LabelStyle::Text)
@@ -735,7 +733,7 @@ fn hour_weather_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, termina
             let num: u16 = c.to_string().parse::<u16>().unwrap();
             add_label_to_window(&mut window_label_hour, create_label(
                 &time_weather::numbers_gui(num,ls as u16),
-                Some(&(center_hour + 5 + i as i32*(ls * 7))),
+                Some(&(center_hour + i as i32*(ls * 7))),
                 Some(&5),
                 Some(models::LabelType::Text),
                 Some(models::LabelStyle::Text)
@@ -746,7 +744,7 @@ fn hour_weather_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, termina
             let num: u16 = c.to_string().parse::<u16>().unwrap();
             add_label_to_window(&mut window_label_hour, create_label(
                 &time_weather::numbers_gui(num,ls as u16),
-                Some(&(center_hour+5 + i as i32*(ls * 7) + 2 * (7 * ls))),
+                Some(&(center_hour + 5 + i as i32*(ls * 7) + 2 * (7 * ls))),
                 Some(&5),
                 Some(models::LabelType::Text),
                 Some(models::LabelStyle::Text)
@@ -757,7 +755,7 @@ fn hour_weather_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, termina
             let num: u16 = c.to_string().parse::<u16>().unwrap();
             add_label_to_window(&mut window_label_hour, create_label(
                 &time_weather::numbers_gui(num,ls as u16),
-                Some(&(center_hour+5 + i as i32*(ls * 7)+ 4 * (7 * ls))),
+                Some(&(center_hour + 10 + i as i32*(ls * 7)+ 4 * (7 * ls))),
                 Some(&5),
                 Some(models::LabelType::Text),
                 Some(models::LabelStyle::Text)
@@ -778,12 +776,6 @@ fn hour_weather_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, termina
 }
 
 fn put_hour_lines_map (window_map: &mut Vec<Vec<String>>, terminal_x: u16, terminal_y: u16) {
-    
-   
-    // let mut impar_x = 0;
-    // let mut impar_y = 0;
-    // if terminal_x % 2 != 0 { impar_x += 1; }
-    // if terminal_y % 2 != 0 { impar_y += 1; }
     
     // X
 
@@ -888,6 +880,12 @@ fn define_select_labels (vec_label: &Vec<models::Label>) -> Vec<&models::Label> 
 }
 
 fn add_label_to_window(window_label: &mut Vec<Vec<String>>,label: models::Label) {
+
+    // This function will add a label to window_label when is called,
+    // needs to respect the functions that have label_window but in individual form
+    //
+    // To be clare: This is for put thing about information because not follow the rules 
+    // of vector sistem that use the common labels, so dont use select here.
 
     // Esta funcion debe de añadir un label al window_label cuando es llamado,
     // debe respetar las funciones que tiene label_window pero de forma individual
@@ -1015,7 +1013,6 @@ fn add_label_to_window(window_label: &mut Vec<Vec<String>>,label: models::Label)
                 window_label[label.pos_y as usize][label.pos_x as usize + i as usize] = c.to_string();
             }
         },
-        // _ => { print!("ERROR: NINGUN LABELTYPE ENCONTRADO.");}
     }
 }
 
@@ -1151,6 +1148,8 @@ fn create_label(text: &String,posi_x: Option<&i32>,posi_y: Option<&i32>,label_ty
 
     // Crea los labels con los parametros proporcionados, tiene varios option para ser versatil
     // para que automaticamente se asignen algunos valores, como por ejemplo para el assign_labels.
+    //
+    // the r means result.
     
     let mut r_type: models::LabelType = models::LabelType::Select;
     let mut r_style: models::LabelStyle = models::LabelStyle::Text;
@@ -1185,7 +1184,7 @@ fn create_label(text: &String,posi_x: Option<&i32>,posi_y: Option<&i32>,label_ty
 
 fn asign_labels (strings: Vec<String>, ter_x: i32, ter_y: i32) -> Vec<models::Label> {
 
-    // This is for just trow here some labelz and the program read it, and assign the
+    // This is for just trow here some labels and the program read it, and assign the
     // best pos in Y and X (center).
 
     // Usualmente para asignar labels para el menu tipo select sin informacion entre medio
