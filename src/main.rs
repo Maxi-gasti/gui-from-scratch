@@ -279,14 +279,15 @@ fn hardware_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, terminal_y:
     window_label_hardware = label_window(&window_label_hardware,select_hardware, &vec_label_hardware,&vec_label_hardware_select,*terminal_x,*terminal_y);
     
     add_label_to_window(&mut window_label_hardware, create_label(
-        &memory::ram_info((percentage(true_x as i32,60) - 2.0) as u16, (percentage(true_y as i32,20)-4.0) as u16), // the only way to skip the spaces from the diagonal is adding -2.
+        &memory::ram_info((percentage(true_x as i32,60) - 2.0) as u16, (percentage(true_y as i32,20)-4.0) as u16), // the only way to skip the spaces from the diagonal is adding -2
+        // the -4 is because (-2) for the 2 lines of put_hardware_lines_map() and another 2 because this are the lines that center the text, in the fn ram_info is added +2 for the real range so is the same.
         Some(&(3 as i32)),
         Some(&(2 as i32)),
         Some(models::LabelType::Text),
         Some(models::LabelStyle::Text)
     ));
     add_label_to_window(&mut window_label_hardware, create_label(
-        &memory::disk_info((percentage(true_x as i32,60) - 2.0) as u16, (percentage(true_y as i32,20)-3.0) as u16), // the only way to skip the spaces from the diagonal is adding -2.
+        &memory::disk_info((percentage(true_x as i32,60) - 2.0) as u16, (percentage(true_y as i32,20)-3.0) as u16),
         Some(&(3 as i32)),
         Some(&{
             percentage(true_y as i32, 20) as i32 + 2
@@ -546,6 +547,13 @@ fn put_hardware_lines_map (window_map: &mut Vec<Vec<String>>, terminal_x: u16, t
     
     window_map[percentage(terminal_y as i32,20) as usize][1 as usize] = String::from("└");
     window_map[(percentage(terminal_y as i32,20) + 1.0) as usize][1 as usize] = String::from("┌");
+
+    if percentage(terminal_y as i32, 20) >= 4.0 {
+        window_map[2][1] = String::from("├");
+        window_map[2][2] = String::from("─");
+        window_map[(2.0 + percentage(terminal_y as i32, 20)) as usize ][1] = String::from("├");
+        window_map[(2.0 + percentage(terminal_y as i32, 20)) as usize ][2] = String::from("─");
+    } 
     
 }
 
@@ -604,6 +612,14 @@ fn hour_weather_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, termina
 
     let ls = 1;
 
+    // This is a closure, works like a function but you dont need to put arguments in, so i will
+    // used it to not repeat the add label thing.
+    //
+    // let mut closure = || {
+    //
+    // Fun fact: didnt work, because window_label_hour is borrowed in mut so later i cant use the
+    // closure :(
+
     // HOUR
 
     for (i,c) in time_weather::get_hour().chars().enumerate() {
@@ -617,7 +633,7 @@ fn hour_weather_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, termina
             )
         );
     }
-    
+
     for (i,c) in time_weather::get_minute().chars().enumerate() {
         let num: u16 = c.to_string().parse::<u16>().unwrap();
         add_label_to_window(&mut window_label_hour, create_label(
@@ -629,7 +645,7 @@ fn hour_weather_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, termina
             )
         );
     }
-    
+
     for (i,c) in time_weather::get_second().chars().enumerate() {
         let num: u16 = c.to_string().parse::<u16>().unwrap();
         add_label_to_window(&mut window_label_hour, create_label(
@@ -642,20 +658,22 @@ fn hour_weather_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, termina
         );
     }
 
-    // Wheather
-    
+    //  Wheather
+
     add_label_to_window(&mut window_label_hour, create_label(
         &time_weather::get_weather(1,weather_frame),
         Some(&5),
-        Some(&35),
+        Some(&(percentage(true_y as i32, 50) as i32)),
         Some(models::LabelType::Text),
         Some(models::LabelStyle::Text)
         )
     );
         
+    // };
+
     let vec_label_hour_select = define_select_labels(&vec_label_hour);
     window_label_hour = label_window(&window_label_hour,select_hour, &vec_label_hour,&vec_label_hour_select,*terminal_x,*terminal_y);
-        gui::print_gui(&window_label_hour,*terminal_x,*terminal_y);
+    gui::print_gui(&window_label_hour,*terminal_x,*terminal_y);
 
     loop {
         if crossterm::event::poll(std::time::Duration::from_millis(1000))? {
@@ -764,7 +782,7 @@ fn hour_weather_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, termina
         add_label_to_window(&mut window_label_hour, create_label(
             &time_weather::get_weather(1,weather_frame),
             Some(&5),
-            Some(&35),
+            Some(&(percentage(true_y as i32, 50) as i32)),
             Some(models::LabelType::Text),
             Some(models::LabelStyle::Text)
             )
