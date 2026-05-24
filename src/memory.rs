@@ -93,7 +93,7 @@ pub fn ram_info (width: u16,height: u16) -> String {
     let mut text: String = String::new();
 
     // Works like a drop
-    if height + 2 < 4 || (width - 13) < 0 {
+    if height + 2 < 4 || (width as i32- 13) < 0 {
         text = "ERROR-RANGE".to_string();
         return text
     }
@@ -438,7 +438,7 @@ pub fn disk_info (width: u16,height: u16) -> String {
 
     let mut text: String = String::new();
 
-    if height + 2 < 2 || (width - 13) < 0 {
+    if height + 2 < 2 || (width as i32 - 13) < 0 {
         // Actualy i put 2 but can have issues with the normal scale. idk i dont think u will have
         // 90 px resolution haha
         text = "ERROR-RANGE".to_string();
