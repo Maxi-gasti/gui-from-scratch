@@ -233,10 +233,20 @@ fn main() -> io::Result<()> {
 fn hardware_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, terminal_y: &mut u16) -> io::Result<()> {
     
     let select_hardware = 0;
-    let mut clock_time: u16 = 1;  
 
     let mut true_x = *terminal_x - 2;
     let mut true_y = *terminal_y - 2;
+    
+    let mut clock_time: u16 = 1;  
+    let mut show_clock = {
+        // 20 is the size of the clock
+        if cpu::cpu_core_num_info() * 3 + 30 <=  percentage(true_x as i32,60) as u16 {
+            println!("MUESTRA");
+            true
+        } else {
+            false
+        }
+    };
     
     let _test = memory::ram_info((percentage(true_x as i32,60) - 2.0) as u16, (percentage(true_y as i32,20)-2.0) as u16);
     let _disk_test = memory::disk_info((percentage(true_x as i32,60) - 2.0) as u16, (percentage(true_y as i32,20)-2.0) as u16); 
@@ -300,15 +310,18 @@ fn hardware_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, terminal_y:
         &cpu::cpu_info((percentage(true_x as i32,40) - 51.0) as u16,(percentage(true_y as i32,60) - 6.0) as u16),
         Some(&{
             let mut x: f32 = percentage(true_x as i32,60) + 1.0;
+            x += 20.0;
             let mut v: f32 = 0.0;
-            if percentage(true_x as i32, 40) <= 20.0 {
+            // println!("{}",cpu::cpu_get_text_width());
+            // so v is the center, idk how to get it really. i mean 40% and rest 20 from the 
+            if (percentage(true_x as i32, 40) - cpu::cpu_get_text_width((percentage(true_x as i32,40) - 50.0) as u16,cpu::cpu_core_num_info()) as f32 - 20.0) <= 20.0 {
                 v = 0.0;
             } else {
-                v = percentage(true_x as i32, 40);
+                v = percentage(true_x as i32, 40) - cpu::cpu_get_text_width((percentage(true_x as i32,40) - 50.0) as u16,cpu::cpu_core_num_info()) as f32 - 20.0;
                 v = v - 20.0;
                 v = v / 2.0;
             }
-            x = x + 20.0 + v - cpu::cpu_get_text_width((percentage(true_x as i32,40) - 50.0) as u16,cpu::cpu_core_num_info()) as f32;
+            x = x + v;
             x as i32 + 1
         }),
         Some(&{
@@ -318,19 +331,21 @@ fn hardware_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, terminal_y:
         Some(models::LabelType::Text),
         Some(models::LabelStyle::Text)
     ));
-    add_label_to_window(&mut window_label_hardware, create_label(
-        &cpu::clock(clock_time),
-        Some(&{
-            let x = percentage(true_x as i32,60) + 1.0;
-            x as i32 + 1
-        }),
-        Some(&{
-            let y = percentage(true_y as i32,5);
-            y as i32 + 1
-        }),
-        Some(models::LabelType::Text),
-        Some(models::LabelStyle::Text)
-    ));
+    if show_clock {
+        add_label_to_window(&mut window_label_hardware, create_label(
+            &cpu::clock(clock_time),
+            Some(&{
+                let x = percentage(true_x as i32,60) + 1.0;
+                x as i32 + 1
+            }),
+            Some(&{
+                let y = percentage(true_y as i32,5);
+                y as i32 + 1
+            }),
+            Some(models::LabelType::Text),
+            Some(models::LabelStyle::Text)
+        ));
+    }
     gui::print_gui(&window_label_hardware,*terminal_x,*terminal_y);
     if clock_time+1 >= 9 {
         clock_time = 1;
@@ -419,16 +434,18 @@ fn hardware_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, terminal_y:
         add_label_to_window(&mut window_label_hardware, create_label(
             &cpu::cpu_info((percentage(true_x as i32,40) - 51.0) as u16,(percentage(true_y as i32,60) - 6.0) as u16),
             Some(&{
-                let mut x = percentage(true_x as i32,60) + 1.0;
-                let mut v = 0.0;
-                if percentage(true_x as i32, 40) <= 20.0 {
+                let mut x: f32 = percentage(true_x as i32,60) + 1.0;
+                x += 20.0;
+                let mut v: f32 = 0.0;
+                // so v is the center, idk how to get it really. i mean 40% and rest 20 from the 
+                if (percentage(true_x as i32, 40) - cpu::cpu_get_text_width((percentage(true_x as i32,40) - 50.0) as u16,cpu::cpu_core_num_info()) as f32 - 20.0) <= 20.0 {
                     v = 0.0;
                 } else {
-                    v = percentage(true_x as i32, 40);
+                    v = percentage(true_x as i32, 40) - cpu::cpu_get_text_width((percentage(true_x as i32,40) - 50.0) as u16,cpu::cpu_core_num_info()) as f32 - 20.0;
                     v = v - 20.0;
                     v = v / 2.0;
                 }
-                x = x + 20.0 + v - cpu::cpu_get_text_width((percentage(true_x as i32,40) - 50.0) as u16,cpu::cpu_core_num_info()) as f32;
+                x = x + v;
                 x as i32 + 1
             }),
             Some(&{
@@ -438,19 +455,21 @@ fn hardware_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, terminal_y:
             Some(models::LabelType::Text),
             Some(models::LabelStyle::Text)
         ));
-        add_label_to_window(&mut window_label_hardware, create_label(
-            &cpu::clock(clock_time),
-            Some(&{
-                let x = percentage(true_x as i32,60) + 1.0;
-                x as i32 + 1
-            }),
-            Some(&{
-                let y = percentage(true_y as i32,5);
-                y as i32 + 1
-            }),
-            Some(models::LabelType::Text),
-            Some(models::LabelStyle::Text)
-        ));
+        if show_clock {
+            add_label_to_window(&mut window_label_hardware, create_label(
+                &cpu::clock(clock_time),
+                Some(&{
+                    let x = percentage(true_x as i32,60) + 1.0;
+                    x as i32 + 1
+                }),
+                Some(&{
+                    let y = percentage(true_y as i32,5);
+                    y as i32 + 1
+                }),
+                Some(models::LabelType::Text),
+                Some(models::LabelStyle::Text)
+            ));
+        }
         if clock_time+1 >= 9 {
             clock_time = 1;
         } else {

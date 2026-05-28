@@ -15,20 +15,12 @@ pub fn cpu_core_num_info () -> u16 {
 }
 
 pub fn cpu_get_text_width (width: u16,core_num: u16) -> i32 {
-    // let mut x_scale: i32 = (width / core_num) as i32;
     let mut x_scale: i32 = {
-        let mut temp_count: i32 = 0;
-        let mut scale: u16 = 0;
-        loop {
-            temp_count = temp_count + core_num as i32;
-            
-            if width >= temp_count as u16 {
-                scale += 1;
-            } else {
-                break;
-            }
+        if (width/core_num as u16 ) as i32 - 1 > 0 {
+            (width/core_num as u16 ) as i32 - 1
+        } else {
+            1
         }
-        scale as i32
     };
     x_scale = x_scale * core_num as i32 + core_num as i32;
     x_scale / 2
@@ -79,20 +71,27 @@ pub fn cpu_info(width: u16,height: u16) -> String {
     }
     
     // how many char can be in the width
+    // let x_scale: i32 = {
+    //     let mut temp_count: i32 = 0;
+    //     let mut scale: u16 = 0;
+    //     loop {
+    //         temp_count = temp_count + core_num as i32;
+    //
+    //         if width >= temp_count as u16 {
+    //             scale += 1;
+    //         } else {
+    //             break;
+    //         }
+    //     }
+    //
+    //     scale as i32
+    // };
     let x_scale: i32 = {
-        let mut temp_count: i32 = 0;
-        let mut scale: u16 = 0;
-        loop {
-            temp_count = temp_count + core_num as i32;
-            
-            if width >= temp_count as u16 {
-                scale += 1;
-            } else {
-                break;
-            }
+        if (width/core_num as u16 ) as i32 - 1 > 0 {
+            (width/core_num as u16 ) as i32 - 1
+        } else {
+            1
         }
-
-        scale as i32
     };
 
     for _i2 in 0..cores_average.len() {
