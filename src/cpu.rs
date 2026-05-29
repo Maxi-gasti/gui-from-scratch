@@ -70,22 +70,6 @@ pub fn cpu_info(width: u16,height: u16) -> String {
         }
     }
     
-    // how many char can be in the width
-    // let x_scale: i32 = {
-    //     let mut temp_count: i32 = 0;
-    //     let mut scale: u16 = 0;
-    //     loop {
-    //         temp_count = temp_count + core_num as i32;
-    //
-    //         if width >= temp_count as u16 {
-    //             scale += 1;
-    //         } else {
-    //             break;
-    //         }
-    //     }
-    //
-    //     scale as i32
-    // };
     let x_scale: i32 = {
         if (width/core_num as u16 ) as i32 - 1 > 0 {
             (width/core_num as u16 ) as i32 - 1
@@ -95,12 +79,12 @@ pub fn cpu_info(width: u16,height: u16) -> String {
     };
 
     for _i2 in 0..cores_average.len() {
-        if x_scale != 0 {
+        if x_scale > 1 {
             text += &format!("{} ",cores_average[_i2] as u16);
         }
         // This is interesting because in rust, if the range is 0..(negative number) it will not do
         // nothing only if the number is more than 0
-        for _i in 0..(x_scale-2+1) {
+        for _i in 0..(x_scale-2) {
             text += &" ".to_string();
         }
     }
@@ -117,15 +101,15 @@ pub fn cpu_info(width: u16,height: u16) -> String {
                 // Dont ask why but i need to add +1 to the condition to be real, if not, then the
                 // for will do nothing, i dont have idea why is this because i tested scale with 1
                 // and doesnt work. if u know why pls tell me MaxiGastia@proton.me
-                for _i3 in 0..(x_scale+1) {
+                for _i3 in 0..(x_scale) {
                     text +=  &"░".to_string();
                 }
             } else if height_percent - cores_average[_i2] > 1.0 {
-                for _i3 in 0..(x_scale+1) {
+                for _i3 in 0..(x_scale) {
                     text +=  &"▒".to_string();
                 }
             } else {
-                for _i3 in 0..(x_scale+1) {
+                for _i3 in 0..(x_scale) {
                     text += &"█".to_string();
                 }
             }
@@ -135,10 +119,10 @@ pub fn cpu_info(width: u16,height: u16) -> String {
     }
 
     for i in 0..cores_average.len() {
-        if x_scale != 0 {
+        if x_scale-1 > 0 {
             text += &format!("C{}",i);
             
-            for _i in 0..(x_scale) {
+            for _i in 0..(x_scale-1) {
                 text += &" ".to_string();
             }
         } else {

@@ -307,7 +307,7 @@ fn hardware_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, terminal_y:
     ));
 
     add_label_to_window(&mut window_label_hardware, create_label(
-        &cpu::cpu_info((percentage(true_x as i32,40) - 51.0) as u16,(percentage(true_y as i32,60) - 6.0) as u16),
+        &cpu::cpu_info((percentage(true_x as i32,40) - 41.0) as u16,(percentage(true_y as i32,60) - 6.0) as u16),
         Some(&{
             let mut x: f32 = percentage(true_x as i32,60) + 1.0;
             x += 20.0;
@@ -432,7 +432,7 @@ fn hardware_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, terminal_y:
         ));
 
         add_label_to_window(&mut window_label_hardware, create_label(
-            &cpu::cpu_info((percentage(true_x as i32,40) - 51.0) as u16,(percentage(true_y as i32,60) - 6.0) as u16),
+            &cpu::cpu_info((percentage(true_x as i32,40) - 41.0) as u16,(percentage(true_y as i32,60) - 6.0) as u16),
             Some(&{
                 let mut x: f32 = percentage(true_x as i32,60) + 1.0;
                 x += 20.0;
@@ -590,30 +590,40 @@ fn hour_weather_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, termina
     
     let mut vec_label_hour = vec![
         create_label(
-            &String::from("Hour"), 
-            Some(&{
-                let x = (true_x as f32 / 100.0) as f32 * 60.0 + 4.0;
-                // this +1 is because x interrup the line because the style of the label can be
-                // upper
-                x as i32 + 1
-            }),
-            Some(&{
-                let y = (true_y as f32 / 100.0) as f32 * 60.0 + 2.0;
-                y as i32 + 1
-            }),
-            Some(models::LabelType::Line), 
-            Some(models::LabelStyle::BottomBorder)),
-        create_label(
             &String::from("Leave 'Enter'"), 
             Some(&{
-                let x = (true_x as f32 / 100.0) as f32 * 60.0 + 5.0;
+                let x = percentage(true_x as i32,60) + 5.0;
                 x as i32 + 1
             }),
             Some(&{
                 let y = true_y as f32 - 3.0;
                 y as i32 + 1
             }),
-            Some(models::LabelType::Line), 
+            Some(models::LabelType::Select), 
+            Some(models::LabelStyle::Edges)),
+        create_label(
+            &format!("Select: {}",select_hour), 
+            Some(&{
+                let x = percentage(true_x as i32,60) + 5.0;
+                x as i32 + 1
+            }),
+            Some(&{
+                let y = true_y as f32 - 50.0;
+                y as i32 + 1
+            }),
+            Some(models::LabelType::Select), 
+            Some(models::LabelStyle::Edges)),
+        create_label(
+            &String::from("Leave 'Enter'"), 
+            Some(&{
+                let x = percentage(true_x as i32,60) + 5.0;
+                x as i32 + 1
+            }),
+            Some(&{
+                let y = true_y as f32 - 30.0;
+                y as i32 + 1
+            }),
+            Some(models::LabelType::Select), 
             Some(models::LabelStyle::Edges))
     ];
 
@@ -697,6 +707,23 @@ fn hour_weather_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, termina
     loop {
         if crossterm::event::poll(std::time::Duration::from_millis(1000))? {
             match crossterm::event::read()? {
+                crossterm::event::Event::Key(key) => {
+                    match key.code {
+                        crossterm::event::KeyCode::Char('q') => break,
+                        crossterm::event::KeyCode::Char('w') | crossterm::event::KeyCode::Up => {
+                            select_hour += 1;
+                            window_label_hour = label_window(&window_label_hour,select_hour, &vec_label_hour,&vec_label_hour_select,*terminal_x,*terminal_y);
+                        },
+                        crossterm::event::KeyCode::Char('s') | crossterm::event::KeyCode::Down => {
+                            select_hour -= 1;
+                            window_label_hour = label_window(&window_label_hour,select_hour, &vec_label_hour,&vec_label_hour_select,*terminal_x,*terminal_y);
+                        },
+                        crossterm::event::KeyCode::Enter => {
+                            break
+                        },
+                        _ => {},
+                    }
+                },
                 crossterm::event::Event::Resize(width,height) => {
                     *terminal_x = width;
                     *terminal_y = height;
@@ -715,47 +742,52 @@ fn hour_weather_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, termina
                     // Clon of window_map for not touch the main window_label.
                     window_label_hour = map_window(*terminal_x,*terminal_y);
                     put_hour_lines_map(&mut window_label_hour,true_x,true_y);
-                    vec_label_hour = vec![
-                        create_label(
-                            &String::from("Hour"), 
-                            Some(&{
-                                let x = (true_x as f32 / 100.0) as f32 * 60.0 + 4.0;
-                                x as i32 + 1
-                            }),
-                            Some(&{
-                                let y = (true_y as f32 / 100.0) as f32 * 60.0 + 2.0;
-                                y as i32 + 1
-                            }),
-                            Some(models::LabelType::Line), 
-                            Some(models::LabelStyle::BottomBorder)),
+                    // here a big new i put let mut, why? because is borrowed and have another size,
+                    // so i put this shiet, is made to any case dont explode but it will be horror
+                    // for scaling and i dont have much emotive toughts in this project so i will do
+                    // some of another fixes and we will see if i continue :)
+                    let mut vec_label_hour = vec![
                         create_label(
                             &String::from("Leave 'Enter'"), 
                             Some(&{
-                                let x = (true_x as f32 / 100.0) as f32 * 60.0 + 5.0;
+                                let x = percentage(true_x as i32,60) + 5.0;
                                 x as i32 + 1
                             }),
                             Some(&{
                                 let y = true_y as f32 - 3.0;
                                 y as i32 + 1
                             }),
-                            Some(models::LabelType::Line), 
-                            Some(models::LabelStyle::Edges)
-                        )
+                            Some(models::LabelType::Select), 
+                            Some(models::LabelStyle::Edges)),
+                        create_label(
+                            &format!("Select: {}",select_hour), 
+                            Some(&{
+                                let x = percentage(true_x as i32,60) + 5.0;
+                                x as i32 + 1
+                            }),
+                            Some(&{
+                                let y = true_y as f32 - 50.0;
+                                y as i32 + 1
+                            }),
+                            Some(models::LabelType::Select), 
+                            Some(models::LabelStyle::Edges)),
+                        create_label(
+                            &String::from("Leave 'Enter'"), 
+                            Some(&{
+                                let x = percentage(true_x as i32,60) + 5.0;
+                                x as i32 + 1
+                            }),
+                            Some(&{
+                                let y = true_y as f32 - 30.0;
+                                y as i32 + 1
+                            }),
+                            Some(models::LabelType::Select), 
+                            Some(models::LabelStyle::Edges))
                     ];
 
                     let vec_label_hour_select = define_select_labels(&vec_label_hour);
                     window_label_hour = label_window(&window_label_hour,select_hour, &vec_label_hour,&vec_label_hour_select,*terminal_x,*terminal_y);
-
-                },
-                crossterm::event::Event::Key(key) => {
-                    match key.code {
-                        crossterm::event::KeyCode::Char('q') => break,
-                        crossterm::event::KeyCode::Enter => {
-                            break
-                        },
-                        _ => {},
-                    }
-                },
+                }
                 _ => {},
             }
         }
