@@ -28,7 +28,11 @@ pub fn cpu_get_text_width (width: u16,core_num: u16) -> i32 {
 
 pub fn cpu_info(width: u16,height: u16) -> String {
     // Funcion para obtener la info del cpu que requiere hardware_menu
-    
+    //
+    // If we espect to this Funcion to do something good it will be worng, so. lets do it like this.
+    // we put a range like idk min 20? or more the fucking range and dont remove the clock, so it
+    // will work and it will not trow errors, it a pussy silution but works.
+    //
     // Cantidad procesadores
     let mut core_num: u16 = 0;
     let mut text = String::new();
@@ -77,6 +81,7 @@ pub fn cpu_info(width: u16,height: u16) -> String {
             1
         }
     };
+    println!("The amount that the scale can with no spaces are: {}, width spaces is -1", x_scale);
 
     for _i2 in 0..cores_average.len() {
         if x_scale > 1 {
