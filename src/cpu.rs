@@ -73,15 +73,15 @@ pub fn cpu_info(width: u16,height: u16) -> String {
             }
         }
     }
-    
+
     let x_scale: i32 = {
-        if (width/core_num as u16 ) as i32 - 1 > 0 {
-            (width/core_num as u16 ) as i32 - 1
+        if core_num > width {
+            0
         } else {
-            1
+            (width/core_num) as i32
         }
     };
-    println!("The amount that the scale can with no spaces are: {}, width spaces is -1", x_scale);
+    // println!("The amount that the scale can with no spaces are: {}, width spaces is -1", x_scale);
 
     for _i2 in 0..cores_average.len() {
         if x_scale > 1 {

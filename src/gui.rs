@@ -565,6 +565,20 @@ pub fn put_hour_lines_map (window_map: &mut Vec<Vec<String>>, terminal_x: u16, t
     window_map[terminal_y as usize][percentage(terminal_x as i32,60) as usize] = String::from("└");
 }
 
+// |----- Error window -----|
+
+pub fn error_window(terminal_x: u16, terminal_y: u16) {
+    let mut map = map_window(terminal_x, terminal_y);
+    let center_x: i32 = terminal_x as i32 / 2;
+    let center_y: i32 = terminal_y as i32 / 2;
+
+    let texto = create_label(&String::from("NOT ENOUGH TERMINAL SIZE"),Some(&center_x),Some(&center_y),Some(models::LabelType::Line),Some(models::LabelStyle::Text));
+    // gui::create_label(&String::from("TEXT"), Some(&40), Some(&4), Some(models::LabelType::Line),Some(models::LabelStyle::Text)),
+    add_label_to_window(&mut map,texto);
+
+    print_gui(&map,terminal_x,terminal_y);
+}
+
 fn percentage (number: i32, percent: i32) -> f32 {
     if  number % 2 == 0 {
         (number as f32 / 100.0) * percent as f32

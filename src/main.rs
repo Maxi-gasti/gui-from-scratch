@@ -259,182 +259,62 @@ fn hardware_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, terminal_y:
         }
     };
     
-    let _test = memory::ram_info((percentage(true_x as i32,60) - 2.0) as u16, (percentage(true_y as i32,20)-2.0) as u16);
-    let _disk_test = memory::disk_info((percentage(true_x as i32,60) - 2.0) as u16, (percentage(true_y as i32,20)-2.0) as u16); 
-    
-    // Clon of window_map for not touch the main window_label.
-    let mut window_label_hardware = window_map.clone();
-    gui::put_hardware_lines_map(&mut window_label_hardware,true_x,true_y);
+    print!("wind_x: {}",terminal_x);
+    print!("wind_y: {}",terminal_y);
 
-    let mut vec_label_hardware = vec![
-        gui::create_label(
-            &String::from("Hardware Check"), 
-            Some(&{
-                let x = percentage(true_x as i32,60) + 4.0;
-                // this +1 is because x interrup the line because the style of the label can be
-                // upper
-                x as i32 + 1
-            }),
-            Some(&{
-                let y = percentage(true_y as i32,60) + 2.0;
-                y as i32 + 1
-            }),
-            Some(models::LabelType::Line), 
-            Some(models::LabelStyle::BottomBorder)),
-        gui::create_label(
-            &String::from("Leave 'Enter'"), 
-            Some(&{
-                let x = percentage(true_x as i32,60) + 5.0;
-                x as i32 + 1
-            }),
-            Some(&{
-                let y = true_y as f32 - 3.0;
-                y as i32 + 1
-            }),
-            Some(models::LabelType::Line), 
-            Some(models::LabelStyle::Edges))
-    ];
+    // min wind_x = 94 , true_x = 92
+    // min wind_y = 21 , true_y = 19
 
-    let mut vec_label_hardware_select = gui::define_select_labels(&vec_label_hardware);
+    // if terminal_x < 94 || terminal_y < 21 {
+    //
+    // } else {
+        // Clon of window_map for not touch the main window_label.
+        let mut window_label_hardware = window_map.clone();
+        gui::put_hardware_lines_map(&mut window_label_hardware,true_x,true_y);
 
-    window_label_hardware = gui::label_window(&window_label_hardware,select_hardware, &vec_label_hardware,&vec_label_hardware_select,*terminal_x,*terminal_y);
-    
-    gui::add_label_to_window(&mut window_label_hardware, gui::create_label(
-        &memory::ram_info((percentage(true_x as i32,60) - 2.0) as u16, (percentage(true_y as i32,20)-4.0) as u16), // the only way to skip the spaces from the diagonal is adding -2
-        // the -4 is because (-2) for the 2 lines of put_hardware_lines_map() and another 2 because this are the lines that center the text, in the fn ram_info is added +2 for the real range so is the same.
-        Some(&(3 as i32)),
-        Some(&(2 as i32)),
-        Some(models::LabelType::Text),
-        Some(models::LabelStyle::Text)
-    ));
-    gui::add_label_to_window(&mut window_label_hardware, gui::create_label(
-        &memory::disk_info((percentage(true_x as i32,60) - 2.0) as u16, (percentage(true_y as i32,20)-3.0) as u16),
-        Some(&(3 as i32)),
-        Some(&{
-            percentage(true_y as i32, 20) as i32 + 2
-        }),
-        Some(models::LabelType::Text),
-        Some(models::LabelStyle::Text)
-    ));
-        
-    println!("We trow the next width: {:?}", (percentage(true_x as i32,40), -21));
-    println!("We trow the next TRUE width: {:?}", (percentage(true_x as i32,40), -41));
+        let mut vec_label_hardware = vec![
+            gui::create_label(
+                &String::from("Hardware Check"), 
+                Some(&{
+                    let x = percentage(true_x as i32,60) + 4.0;
+                    // this +1 is because x interrup the line because the style of the label can be
+                    // upper
+                    x as i32 + 1
+                }),
+                Some(&{
+                    let y = percentage(true_y as i32,60) + 2.0;
+                    y as i32 + 1
+                }),
+                Some(models::LabelType::Line), 
+                Some(models::LabelStyle::BottomBorder)),
+            gui::create_label(
+                &String::from("Leave 'Enter'"), 
+                Some(&{
+                    let x = percentage(true_x as i32,60) + 5.0;
+                    x as i32 + 1
+                }),
+                Some(&{
+                    let y = true_y as f32 - 3.0;
+                    y as i32 + 1
+                }),
+                Some(models::LabelType::Line), 
+                Some(models::LabelStyle::Edges))
+        ];
 
-    gui::add_label_to_window(&mut window_label_hardware, gui::create_label(
-        &cpu::cpu_info((percentage(true_x as i32,40) - 41.0) as u16,(percentage(true_y as i32,60) - 6.0) as u16),
-        Some(&{
-            let mut x: f32 = percentage(true_x as i32,60) + 1.0;
-            x += 20.0;
-            let mut v: f32 = 0.0;
-            if (percentage(true_x as i32, 40) - cpu::cpu_get_text_width((percentage(true_x as i32,40) - 50.0) as u16,cpu::cpu_core_num_info()) as f32 - 20.0) <= 20.0 {
-                v = 0.0;
-            } else {
-                v = percentage(true_x as i32, 40) - cpu::cpu_get_text_width((percentage(true_x as i32,40) - 50.0) as u16,cpu::cpu_core_num_info()) as f32 - 20.0;
-                v = v - 20.0;
-                v = v / 2.0;
-            }
-            x = x + v;
-            x as i32 + 1
-        }),
-        Some(&{
-            let y = 2;
-            y as i32 + 1
-        }),
-        Some(models::LabelType::Text),
-        Some(models::LabelStyle::Text)
-    ));
-    if show_clock {
-        gui::add_label_to_window(&mut window_label_hardware, gui::create_label(
-            &cpu::clock(clock_time),
-            Some(&{
-                let x = percentage(true_x as i32,60) + 1.0;
-                x as i32 + 1
-            }),
-            Some(&{
-                let y = percentage(true_y as i32,5);
-                y as i32 + 1
-            }),
-            Some(models::LabelType::Text),
-            Some(models::LabelStyle::Text)
-        ));
-    }
-    gui::print_gui(&window_label_hardware,*terminal_x,*terminal_y);
-    if clock_time+1 >= 9 {
-        clock_time = 1;
-    } else {
-        clock_time += 1;
-    }
+        let mut vec_label_hardware_select = gui::define_select_labels(&vec_label_hardware);
 
-    loop {
-        if crossterm::event::poll(std::time::Duration::from_millis(1000))? {
-            match crossterm::event::read()? {
-                crossterm::event::Event::Resize(width,height) => {
-                    *terminal_x = width;
-                    *terminal_y = height;
-                    
-                    true_x = *terminal_x - 2;
-                    true_y = *terminal_y - 2;
-                    
-                    // THIS WILL ALL HAPPEN AGAIN. because i dont wanna do a function just for
-                    // repeat 2 times.
-                    
-                    // Clon of window_map for not touch the main window_label.
-                    window_label_hardware = gui::map_window(*terminal_x,*terminal_y);
-                    gui::put_hardware_lines_map(&mut window_label_hardware,true_x,true_y);
-                    vec_label_hardware = vec![
-                        gui::create_label(
-                            &String::from("Hardware Check"), 
-                            Some(&{
-                                let x = percentage(true_x as i32,60) + 4.0;
-                                x as i32 + 1
-                            }),
-                            Some(&{
-                                let y = percentage(true_y as i32,60) + 2.0;
-                                y as i32 + 1
-                            }),
-                            Some(models::LabelType::Line), 
-                            Some(models::LabelStyle::BottomBorder)),
-                        gui::create_label(
-                            &String::from("Leave 'Enter'"), 
-                            Some(&{
-                                let x = percentage(true_x as i32,60) + 5.0;
-                                x as i32 + 1
-                            }),
-                            Some(&{
-                                let y = true_y as f32 - 3.0;
-                                y as i32 + 1
-                            }),
-                            Some(models::LabelType::Line), 
-                            Some(models::LabelStyle::Edges)
-                        )
-                    ];
-                    
-                    vec_label_hardware_select = gui::define_select_labels(&vec_label_hardware);
-                    window_label_hardware = gui::label_window(&window_label_hardware,select_hardware, &vec_label_hardware,&vec_label_hardware_select,*terminal_x,*terminal_y);
-
-                },
-                crossterm::event::Event::Key(key) => {
-                    match key.code {
-                        crossterm::event::KeyCode::Char('q') => break,
-                        crossterm::event::KeyCode::Enter => {
-                            break
-                        },
-                        _ => {},
-                    }
-                },
-                _ => {},
-            }
-        }
+        window_label_hardware = gui::label_window(&window_label_hardware,select_hardware, &vec_label_hardware,&vec_label_hardware_select,*terminal_x,*terminal_y);
 
         gui::add_label_to_window(&mut window_label_hardware, gui::create_label(
-            &memory::ram_info((percentage(true_x as i32,60) - 2.0) as u16, (percentage(true_y as i32,20)-4.0) as u16), 
+            &memory::ram_info((percentage(true_x as i32,60) - 2.0) as u16, (percentage(true_y as i32,20)-4.0) as u16), // the only way to skip the spaces from the diagonal is adding -2
+            // the -4 is because (-2) for the 2 lines of put_hardware_lines_map() and another 2 because this are the lines that center the text, in the fn ram_info is added +2 for the real range so is the same.
             Some(&(3 as i32)),
             Some(&(2 as i32)),
             Some(models::LabelType::Text),
             Some(models::LabelStyle::Text)
         ));
         gui::add_label_to_window(&mut window_label_hardware, gui::create_label(
-            &memory::disk_info((percentage(true_x as i32,60) - 2.0) as u16, (percentage(true_y as i32,20)-3.0) as u16), 
+            &memory::disk_info((percentage(true_x as i32,60) - 2.0) as u16, (percentage(true_y as i32,20)-3.0) as u16),
             Some(&(3 as i32)),
             Some(&{
                 percentage(true_y as i32, 20) as i32 + 2
@@ -444,21 +324,27 @@ fn hardware_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, terminal_y:
         ));
 
         gui::add_label_to_window(&mut window_label_hardware, gui::create_label(
-            &cpu::cpu_info((percentage(true_x as i32,40) - 41.0) as u16,(percentage(true_y as i32,60) - 6.0) as u16),
+            &cpu::cpu_info((percentage(true_x as i32,40) - 32.0) as u16,(percentage(true_y as i32,60) - 6.0) as u16),
             Some(&{
                 let mut x: f32 = percentage(true_x as i32,60) + 1.0;
                 x += 20.0;
-                let mut v: f32 = 0.0;
-                // so v is the center, idk how to get it really. i mean 40% and rest 20 from the 
-                if (percentage(true_x as i32, 40) - cpu::cpu_get_text_width((percentage(true_x as i32,40) - 50.0) as u16,cpu::cpu_core_num_info()) as f32 - 20.0) <= 20.0 {
-                    v = 0.0;
-                } else {
-                    v = percentage(true_x as i32, 40) - cpu::cpu_get_text_width((percentage(true_x as i32,40) - 50.0) as u16,cpu::cpu_core_num_info()) as f32 - 20.0;
-                    v = v - 20.0;
-                    v = v / 2.0;
-                }
-                x = x + v;
-                x as i32 + 1
+
+                // The problem is HERE, the v is miscalculated. so when is centered collapse the
+                // entire gui !
+                //
+                // for now i will put it in the beginning. 
+
+                // let mut v: f32 = 0.0;
+                // // so v is the center, idk how to get it really. i mean 40% and rest 20 from the 
+                // if (percentage(true_x as i32, 40) - cpu::cpu_get_text_width((percentage(true_x as i32,40) - 50.0) as u16,cpu::cpu_core_num_info()) as f32 - 20.0) <= 20.0 {
+                //     v = 0.0;
+                // } else {
+                //     v = percentage(true_x as i32, 40) - cpu::cpu_get_text_width((percentage(true_x as i32,40) - 50.0) as u16,cpu::cpu_core_num_info()) as f32 - 20.0;
+                //     v = v - 20.0;
+                //     v = v / 2.0;
+                // }
+                // x = x + v;
+                x as i32 + 2
             }),
             Some(&{
                 let y = 2;
@@ -467,6 +353,7 @@ fn hardware_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, terminal_y:
             Some(models::LabelType::Text),
             Some(models::LabelStyle::Text)
         ));
+
         if show_clock {
             gui::add_label_to_window(&mut window_label_hardware, gui::create_label(
                 &cpu::clock(clock_time),
@@ -482,13 +369,142 @@ fn hardware_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, terminal_y:
                 Some(models::LabelStyle::Text)
             ));
         }
+        gui::print_gui(&window_label_hardware,*terminal_x,*terminal_y);
         if clock_time+1 >= 9 {
             clock_time = 1;
         } else {
             clock_time += 1;
         }
-        gui::print_gui(&window_label_hardware,*terminal_x,*terminal_y);
-    }
+    loop {
+            if crossterm::event::poll(std::time::Duration::from_millis(1000))? {
+                match crossterm::event::read()? {
+                    crossterm::event::Event::Resize(width,height) => {
+                        *terminal_x = width;
+                        *terminal_y = height;
+                        
+                        true_x = *terminal_x - 2;
+                        true_y = *terminal_y - 2;
+                        
+                        // THIS WILL ALL HAPPEN AGAIN. because i dont wanna do a function just for
+                        // repeat 2 times.
+                        
+                        // Clon of window_map for not touch the main window_label.
+                        window_label_hardware = gui::map_window(*terminal_x,*terminal_y);
+                        gui::put_hardware_lines_map(&mut window_label_hardware,true_x,true_y);
+                        vec_label_hardware = vec![
+                            gui::create_label(
+                                &String::from("Hardware Check"), 
+                                Some(&{
+                                    let x = percentage(true_x as i32,60) + 4.0;
+                                    x as i32 + 1
+                                }),
+                                Some(&{
+                                    let y = percentage(true_y as i32,60) + 2.0;
+                                    y as i32 + 1
+                                }),
+                                Some(models::LabelType::Line), 
+                                Some(models::LabelStyle::BottomBorder)),
+                            gui::create_label(
+                                &String::from("Leave 'Enter'"), 
+                                Some(&{
+                                    let x = percentage(true_x as i32,60) + 5.0;
+                                    x as i32 + 1
+                                }),
+                                Some(&{
+                                    let y = true_y as f32 - 3.0;
+                                    y as i32 + 1
+                                }),
+                                Some(models::LabelType::Line), 
+                                Some(models::LabelStyle::Edges)
+                            )
+                        ];
+                        
+                        vec_label_hardware_select = gui::define_select_labels(&vec_label_hardware);
+                        window_label_hardware = gui::label_window(&window_label_hardware,select_hardware, &vec_label_hardware,&vec_label_hardware_select,*terminal_x,*terminal_y);
+
+                    },
+                    crossterm::event::Event::Key(key) => {
+                        match key.code {
+                            crossterm::event::KeyCode::Char('q') => break,
+                            crossterm::event::KeyCode::Enter => {
+                                break
+                            },
+                            _ => {},
+                        }
+                    },
+                    _ => {},
+                }
+            }
+
+            gui::add_label_to_window(&mut window_label_hardware, gui::create_label(
+                &memory::ram_info((percentage(true_x as i32,60) - 2.0) as u16, (percentage(true_y as i32,20)-4.0) as u16), 
+                Some(&(3 as i32)),
+                Some(&(2 as i32)),
+                Some(models::LabelType::Text),
+                Some(models::LabelStyle::Text)
+            ));
+            gui::add_label_to_window(&mut window_label_hardware, gui::create_label(
+                &memory::disk_info((percentage(true_x as i32,60) - 2.0) as u16, (percentage(true_y as i32,20)-3.0) as u16), 
+                Some(&(3 as i32)),
+                Some(&{
+                    percentage(true_y as i32, 20) as i32 + 2
+                }),
+                Some(models::LabelType::Text),
+                Some(models::LabelStyle::Text)
+            ));
+
+            gui::add_label_to_window(&mut window_label_hardware, gui::create_label(
+                &cpu::cpu_info((percentage(true_x as i32,40) - 32.0) as u16,(percentage(true_y as i32,60) - 6.0) as u16),
+                Some(&{
+                    let mut x: f32 = percentage(true_x as i32,60) + 1.0;
+                    x += 20.0;
+
+                    // The problem is HERE, the v is miscalculated. so when is centered collapse the
+                    // entire gui !
+                    //
+                    // for now i will put it in the beginning. 
+
+                    // let mut v: f32 = 0.0;
+                    // // so v is the center, idk how to get it really. i mean 40% and rest 20 from the 
+                    // if (percentage(true_x as i32, 40) - cpu::cpu_get_text_width((percentage(true_x as i32,40) - 50.0) as u16,cpu::cpu_core_num_info()) as f32 - 20.0) <= 20.0 {
+                    //     v = 0.0;
+                    // } else {
+                    //     v = percentage(true_x as i32, 40) - cpu::cpu_get_text_width((percentage(true_x as i32,40) - 50.0) as u16,cpu::cpu_core_num_info()) as f32 - 20.0;
+                    //     v = v - 20.0;
+                    //     v = v / 2.0;
+                    // }
+                    // x = x + v;
+                    x as i32 + 2
+                }),
+                Some(&{
+                    let y = 2;
+                    y as i32 + 1
+                }),
+                Some(models::LabelType::Text),
+                Some(models::LabelStyle::Text)
+            ));
+            if show_clock {
+                gui::add_label_to_window(&mut window_label_hardware, gui::create_label(
+                    &cpu::clock(clock_time),
+                    Some(&{
+                        let x = percentage(true_x as i32,60) + 1.0;
+                        x as i32 + 1
+                    }),
+                    Some(&{
+                        let y = percentage(true_y as i32,5);
+                        y as i32 + 1
+                    }),
+                    Some(models::LabelType::Text),
+                    Some(models::LabelStyle::Text)
+                ));
+            }
+            if clock_time+1 >= 9 {
+                clock_time = 1;
+            } else {
+                clock_time += 1;
+            }
+            gui::print_gui(&window_label_hardware,*terminal_x,*terminal_y);
+        }
     Ok(())
 }
 
@@ -544,7 +560,6 @@ fn hour_weather_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, termina
     ];
 
     // the letters in size 1 are 6 pixels in width.
-    
     
     let mut center_hour = {
         let x = (percentage(true_x as i32,60) as i32 / 2) - 20;
@@ -609,8 +624,6 @@ fn hour_weather_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, termina
         Some(models::LabelStyle::Text)
         )
     );
-        
-    // };
 
     let vec_label_hour_select = gui::define_select_labels(&vec_label_hour);
     window_label_hour = gui::label_window(&window_label_hour,select_hour, &vec_label_hour,&vec_label_hour_select,*terminal_x,*terminal_y);
