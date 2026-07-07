@@ -77,7 +77,7 @@ fn main() -> io::Result<()> {
     // cant depend 100% on the cpu, so, i will use this like a buffer, this is my first time using
     // it with something like 1920x1020 lol.
     let mut window_label: Vec<Vec<String>> = window_map.clone();
-    window_label = gui::label_window(&window_map,select,&vec_labels,&select_labels,terminal_x,terminal_y);
+    window_label = gui::label_window(&window_map,select,&vec_labels,&select_labels);
     gui::print_gui(&window_label,terminal_x,terminal_y);
 
     loop {
@@ -90,7 +90,7 @@ fn main() -> io::Result<()> {
                 vec_labels = gui::reset_labels(vec_labels,width as i32, height as i32);
                 select_labels = gui::define_select_labels(&vec_labels);
                 // 
-                window_label = gui::label_window(&window_map,select,&vec_labels,&select_labels,terminal_x,terminal_y);
+                window_label = gui::label_window(&window_map,select,&vec_labels,&select_labels);
                 gui::print_gui(&window_label,terminal_x,terminal_y);
             },
             crossterm::event::Event::Key(crossterm::event::KeyEvent {code, ..} ) => { // DESEMPAQUETA EL STRUCT Keyevent y sacas el code que seria un keycode
@@ -99,13 +99,13 @@ fn main() -> io::Result<()> {
                     crossterm::event::KeyCode::Char('w') | crossterm::event::KeyCode::Up => {
                         if (select-1) >= 0 as i16 {select -= 1}
                         // 
-                        window_label = gui::label_window(&window_map,select,&vec_labels,&select_labels,terminal_x,terminal_y);
+                        window_label = gui::label_window(&window_map,select,&vec_labels,&select_labels);
                         gui::print_gui(&window_label,terminal_x,terminal_y);
                     },
                     crossterm::event::KeyCode::Char('s') | crossterm::event::KeyCode::Down => {
                         if (select+1) <= (select_labels.iter().len() as i16 - 1) { select += 1}
                         // 
-                        window_label = gui::label_window(&window_map,select,&vec_labels,&select_labels,terminal_x,terminal_y);
+                        window_label = gui::label_window(&window_map,select,&vec_labels,&select_labels);
                         gui::print_gui(&window_label,terminal_x,terminal_y);
                     },
 
@@ -134,7 +134,7 @@ fn main() -> io::Result<()> {
                                         vec_labels = gui::reset_labels(vec_labels,terminal_x as i32, terminal_y as i32);
                                         select_labels = gui::define_select_labels(&vec_labels);
                                         
-                                        window_label = gui::label_window(&window_map,select,&vec_labels,&select_labels,terminal_x,terminal_y);
+                                        window_label = gui::label_window(&window_map,select,&vec_labels,&select_labels);
                                         gui::print_gui(&window_label,terminal_x,terminal_y);
 
                                     },
@@ -145,7 +145,7 @@ fn main() -> io::Result<()> {
                                         vec_labels = gui::reset_labels(vec_labels,terminal_x as i32, terminal_y as i32);
                                         select_labels = gui::define_select_labels(&vec_labels);
                                         
-                                        window_label = gui::label_window(&window_map,select,&vec_labels,&select_labels,terminal_x,terminal_y);
+                                        window_label = gui::label_window(&window_map,select,&vec_labels,&select_labels);
                                         gui::print_gui(&window_label,terminal_x,terminal_y);
 
                                     },
@@ -161,7 +161,7 @@ fn main() -> io::Result<()> {
                                             gui::create_label(&String::from("Return to menu"), Some(&10),Some(&(terminal_y as i32 -10)),Some(models::LabelType::Select),Some(models::LabelStyle::BottomBorder))
                                         ];
                                         select_labels = gui::define_select_labels(&vec_labels);
-                                        window_label = gui::label_window(&window_map,select,&vec_labels,&select_labels,terminal_x,terminal_y);
+                                        window_label = gui::label_window(&window_map,select,&vec_labels,&select_labels);
                                         //
                                         gui::print_gui(&window_label,terminal_x,terminal_y);
                                     },
@@ -174,7 +174,7 @@ fn main() -> io::Result<()> {
                                         vec_labels = gui::asign_labels(vec![format!("CONFIG"),format!("COLOR"),"nose".to_string(),"dosdos".to_string()],terminal_x as i32,terminal_y as i32);
                                         select_labels = gui::define_select_labels(&vec_labels);
                                         // 
-                                        window_label = gui::label_window(&window_map,select,&vec_labels,&select_labels,terminal_x,terminal_y);
+                                        window_label = gui::label_window(&window_map,select,&vec_labels,&select_labels);
                                         gui::print_gui(&window_label,terminal_x,terminal_y);
                                     },
                                     4 => { gui::clear_terminal(); break},
@@ -190,7 +190,7 @@ fn main() -> io::Result<()> {
                                         select_labels = gui::define_select_labels(&vec_labels);
                                         menu_location = "menu";
                                         // 
-                                        window_label = gui::label_window(&window_map,select,&vec_labels,&select_labels,terminal_x,terminal_y);
+                                        window_label = gui::label_window(&window_map,select,&vec_labels,&select_labels);
                                         gui::print_gui(&window_label,terminal_x,terminal_y);
                                     },
                                     _ => {},
@@ -203,7 +203,7 @@ fn main() -> io::Result<()> {
                                         select_labels = gui::define_select_labels(&vec_labels);
                                         menu_location = "menu";
                                         // 
-                                        window_label = gui::label_window(&window_map,select,&vec_labels,&select_labels,terminal_x,terminal_y);
+                                        window_label = gui::label_window(&window_map,select,&vec_labels,&select_labels);
                                         gui::print_gui(&window_label,terminal_x,terminal_y);
                                     },
                                     _ => {},
@@ -216,7 +216,7 @@ fn main() -> io::Result<()> {
                                         select_labels = gui::define_select_labels(&vec_labels);
                                         menu_location = "menu";
                                         // 
-                                        window_label = gui::label_window(&window_map,select,&vec_labels,&select_labels,terminal_x,terminal_y);
+                                        window_label = gui::label_window(&window_map,select,&vec_labels,&select_labels);
                                         gui::print_gui(&window_label,terminal_x,terminal_y);
                                     },
                                     _ => {},
@@ -232,7 +232,7 @@ fn main() -> io::Result<()> {
                                         select_labels = gui::define_select_labels(&vec_labels);
                                         menu_location = "menu";
                                         // 
-                                        window_label = gui::label_window(&window_map,select,&vec_labels,&select_labels,terminal_x,terminal_y);
+                                        window_label = gui::label_window(&window_map,select,&vec_labels,&select_labels);
                                         gui::print_gui(&window_label,terminal_x,terminal_y);
                                     },
                                     _ => {},
@@ -317,7 +317,7 @@ fn hardware_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, terminal_y:
 
         let mut vec_label_hardware_select = gui::define_select_labels(&vec_label_hardware);
 
-        window_label_hardware = gui::label_window(&window_label_hardware,select_hardware, &vec_label_hardware,&vec_label_hardware_select,*terminal_x,*terminal_y);
+        window_label_hardware = gui::label_window(&window_label_hardware,select_hardware, &vec_label_hardware,&vec_label_hardware_select);
 
         gui::add_label_to_window(&mut window_label_hardware, gui::create_label(
             &memory::ram_info((percentage(true_x as i32,60) - 2.0) as u16, (percentage(true_y as i32,20)-4.0) as u16), // the only way to skip the spaces from the diagonal is adding -2
@@ -348,16 +348,18 @@ fn hardware_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, terminal_y:
                 //
                 // for now i will put it in the beginning. 
 
-                // let mut v: f32 = 0.0;
-                // // so v is the center, idk how to get it really. i mean 40% and rest 20 from the 
-                // if (percentage(true_x as i32, 40) - cpu::cpu_get_text_width((percentage(true_x as i32,40) - 50.0) as u16,cpu::cpu_core_num_info()) as f32 - 20.0) <= 20.0 {
+                let mut v: f32 = 0.0;
+                v = cpu::cpu_get_text_width((percentage(true_x as i32,40) - 32.0) as u16, cpu::cpu_core_num_info()) as f32;
+                // let size = percentage(true_x as i32,40) - 32.0;
+                // if size 
+                // if (percentage(true_x as i32, 40) - cpu::cpu_get_text_width((percentage(true_x as i32,40) - 32.0) as u16,cpu::cpu_core_num_info()) as f32 - 20.0) <= 20.0 {
                 //     v = 0.0;
                 // } else {
-                //     v = percentage(true_x as i32, 40) - cpu::cpu_get_text_width((percentage(true_x as i32,40) - 50.0) as u16,cpu::cpu_core_num_info()) as f32 - 20.0;
+                //     v = percentage(true_x as i32, 40) - cpu::cpu_get_text_width((percentage(true_x as i32,40) - 32.0) as u16,cpu::cpu_core_num_info()) as f32 - 20.0;
                 //     v = v - 20.0;
                 //     v = v / 2.0;
                 // }
-                // x = x + v;
+                x = x + v;
                 x as i32 + 2
             }),
             Some(&{
@@ -434,7 +436,7 @@ fn hardware_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, terminal_y:
                     ];
                     
                     vec_label_hardware_select = gui::define_select_labels(&vec_label_hardware);
-                    window_label_hardware = gui::label_window(&window_label_hardware,select_hardware, &vec_label_hardware,&vec_label_hardware_select,*terminal_x,*terminal_y);
+                    window_label_hardware = gui::label_window(&window_label_hardware,select_hardware, &vec_label_hardware,&vec_label_hardware_select);
 
                 },
                 crossterm::event::Event::Key(key) => {
@@ -478,7 +480,8 @@ fn hardware_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, terminal_y:
                 //
                 // for now i will put it in the beginning. 
 
-                // let mut v: f32 = 0.0;
+                let mut v: f32 = 0.0;
+                v = cpu::cpu_get_text_width((percentage(true_x as i32,40) - 32.0) as u16, cpu::cpu_core_num_info()) as f32;
                 // // so v is the center, idk how to get it really. i mean 40% and rest 20 from the 
                 // if (percentage(true_x as i32, 40) - cpu::cpu_get_text_width((percentage(true_x as i32,40) - 50.0) as u16,cpu::cpu_core_num_info()) as f32 - 20.0) <= 20.0 {
                 //     v = 0.0;
@@ -487,7 +490,7 @@ fn hardware_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, terminal_y:
                 //     v = v - 20.0;
                 //     v = v / 2.0;
                 // }
-                // x = x + v;
+                x = x + v;
                 x as i32 + 2
             }),
             Some(&{
@@ -640,7 +643,7 @@ fn hour_weather_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, termina
     );
 
     let vec_label_hour_select = gui::define_select_labels(&vec_label_hour);
-    window_label_hour = gui::label_window(&window_label_hour,select_hour, &vec_label_hour,&vec_label_hour_select,*terminal_x,*terminal_y);
+    window_label_hour = gui::label_window(&window_label_hour,select_hour, &vec_label_hour,&vec_label_hour_select);
     gui::print_gui(&window_label_hour,*terminal_x,*terminal_y);
 
     loop {
@@ -651,11 +654,11 @@ fn hour_weather_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, termina
                         crossterm::event::KeyCode::Char('q') => break,
                         crossterm::event::KeyCode::Char('w') | crossterm::event::KeyCode::Up => {
                             select_hour += 1;
-                            window_label_hour = gui::label_window(&window_label_hour,select_hour, &vec_label_hour,&vec_label_hour_select,*terminal_x,*terminal_y);
+                            window_label_hour = gui::label_window(&window_label_hour,select_hour, &vec_label_hour,&vec_label_hour_select);
                         },
                         crossterm::event::KeyCode::Char('s') | crossterm::event::KeyCode::Down => {
                             select_hour -= 1;
-                            window_label_hour = gui::label_window(&window_label_hour,select_hour, &vec_label_hour,&vec_label_hour_select,*terminal_x,*terminal_y);
+                            window_label_hour = gui::label_window(&window_label_hour,select_hour, &vec_label_hour,&vec_label_hour_select);
                         },
                         crossterm::event::KeyCode::Enter => {
                             break
@@ -725,7 +728,7 @@ fn hour_weather_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, termina
                     ];
 
                     let vec_label_hour_select = gui::define_select_labels(&vec_label_hour);
-                    window_label_hour = gui::label_window(&window_label_hour,select_hour, &vec_label_hour,&vec_label_hour_select,*terminal_x,*terminal_y);
+                    window_label_hour = gui::label_window(&window_label_hour,select_hour, &vec_label_hour,&vec_label_hour_select);
                 }
                 _ => {},
             }

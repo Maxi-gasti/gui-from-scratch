@@ -210,7 +210,7 @@ pub fn add_label_to_window(window_label: &mut Vec<Vec<String>>,label: models::La
 }
 
 
-pub fn label_window(window_map: &Vec<Vec<String>>,select: i16,vec_labels: &Vec<models::Label>,select_labels: &Vec<&models::Label>,terminal_x: u16,terminal_y: u16) -> Vec<Vec<String>> {
+pub fn label_window(window_map: &Vec<Vec<String>>,select: i16,vec_labels: &Vec<models::Label>,select_labels: &Vec<&models::Label>) -> Vec<Vec<String>> {
 
 
     // ESTA FUNCION SOLO SIRVE PARA CUANDO CAMBIAN LOS LABELS, SOLO SE USA CUANDO SE ACTUALIZA LA
