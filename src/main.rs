@@ -1,12 +1,14 @@
-pub mod models;
-pub mod cpu;
-pub mod memory;
-pub mod gui;
-pub mod time_weather;
+pub mod models; // Models, labels, typelabels, and stylelabels.
+pub mod cpu; // the fn that returns cpu info like core_nums text_size of the core etc.
+pub mod memory; // same like cpu, but with the ram.
+pub mod gui; // functions to operate 2 dimentions vector, for gui proposes, like add labels etc.
+pub mod time_weather; // time and weather libs.
+pub mod pc_info; // computer info libs
 use crossterm::terminal::size;
 use std::io;
 use std::fs;
 use std::io::Write;
+use std::env;
 
 use log::{info,warn};
 // use std::thread;
@@ -58,7 +60,11 @@ fn main() -> io::Result<()> {
 
     let mut file_log = fs::OpenOptions::new().create(true).append(true).open("log.txt")?;
     let local_time = time_weather::get_time();
-    let text = format!("{}: Program init",local_time);
+    let text = format!("{}: {}Program init{}",local_time,GREEN,RESET);
+    writeln!(file_log,"{}",text)?;
+    let user = env::var("USER").unwrap_or_else(|_| "desconocido".to_string());
+    let local_time = time_weather::get_time();
+    let text = format!("{}: {}User:{} {}",local_time,YELLOW,RESET,user);
     writeln!(file_log,"{}",text)?;
 
     let mut select: i16 = 0;
@@ -116,7 +122,7 @@ fn main() -> io::Result<()> {
                             "menu" => match select {
                                     0 => {
                                         let local_time = time_weather::get_time();
-                                        let text = format!("{}: hardware menu init",local_time);
+                                        let text = format!("{}: {}hardware menu init{}",local_time,GREEN,RESET);
                                         writeln!(file_log,"{}",text)?;
 
                                         // ACA UN MENU GUI!
@@ -125,7 +131,7 @@ fn main() -> io::Result<()> {
                                         // let text = format!("terminal_x despues de hardware: {}", terminal_x);
                                         
                                         let local_time = time_weather::get_time();
-                                        let text = format!("{}: hardware menu end",local_time);
+                                        let text = format!("{}: {}hardware menu end{}",local_time,GREEN,RESET);
                                         writeln!(file_log,"{}",text)?;
                                         
 
@@ -250,7 +256,7 @@ fn main() -> io::Result<()> {
     let _ = crossterm::terminal::disable_raw_mode();
     gui::clear_terminal();
     let local_time = time_weather::get_time();
-    let text = format!("{}: Program end",local_time);
+    let text = format!("{}: {}Program end{}",local_time,GREEN,RESET);
     writeln!(file_log,"{}",text)?;
     println!("Good bye!");
     Ok(())
