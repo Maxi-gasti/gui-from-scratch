@@ -18,6 +18,7 @@ const BLACK: &str = "\x1b[90m";
 const GREEN: &str = "\x1b[32m";
 const YELLOW2: &str = "\x1b[4;1;33m";
 const YELLOW: &str = "\x1b[1;33m";
+const RED: &str = "\x1b[1;31m";
 const RESET: &str = "\x1b[0m";
 
 
@@ -35,6 +36,12 @@ impl RawModeGuard {
 impl Drop for RawModeGuard {
     fn drop(&mut self) {
         let _ = crossterm::terminal::disable_raw_mode();
+        if let Ok(mut file_log) = fs::OpenOptions::new().create(true).append(true).open("log.txt") {
+            let local_time = time_weather::get_time();
+            let text = format!("{}: {}DROP:{} El programa dropeo exitosamente",local_time,RED,RESET);
+            let _ = writeln!(file_log,"{}",text);
+        }
+
     }
 }
 
@@ -57,19 +64,29 @@ fn main() -> io::Result<()> {
     // 06-07 Stable version now! need to change a few things and i can continue with adding things
     
     let _raw_guard = RawModeGuard::new()?;
-
-    let mut file_log = fs::OpenOptions::new().create(true).append(true).open("log.txt")?;
-    let local_time = time_weather::get_time();
-    let text = format!("{}: {}Program init{}",local_time,GREEN,RESET);
-    writeln!(file_log,"{}",text)?;
-    let user = env::var("USER").unwrap_or_else(|_| "desconocido".to_string());
-    let local_time = time_weather::get_time();
-    let text = format!("{}: {}User:{} {}",local_time,YELLOW,RESET,user);
-    writeln!(file_log,"{}",text)?;
+    
+    // Scope para escribir el log.
+    {
+        let mut file_log = fs::OpenOptions::new().create(true).append(true).open("log.txt")?;
+        let local_time = time_weather::get_time();
+        let text = format!("{}: {}Program init{}",local_time,GREEN,RESET);
+        writeln!(file_log,"{}",text)?;
+        let user = pc_info::user_name();
+        let local_time = time_weather::get_time();
+        let text = format!("{}: {}User:{} {}",local_time,YELLOW,RESET,user);
+        writeln!(file_log,"{}",text)?;
+        let model = pc_info::cpu_model();
+        let local_time = time_weather::get_time();
+        let text = format!("{}: {}cpu model:{}{}",local_time,YELLOW,RESET,model);
+        writeln!(file_log,"{}",text)?;
+        let model = pc_info::ram_model();
+        let local_time = time_weather::get_time();
+        let text = format!("{}: {}ram model:{}{}",local_time,YELLOW,RESET,model);
+        writeln!(file_log,"{}",text)?;
+    }
 
     let mut select: i16 = 0;
     let mut menu_location: &str = "menu";
-    
 
     // Esto se cuenta en lineas no en pixeles.
     let (mut terminal_x,mut terminal_y) = size()?;
@@ -121,19 +138,22 @@ fn main() -> io::Result<()> {
                         match menu_location {
                             "menu" => match select {
                                     0 => {
-                                        let local_time = time_weather::get_time();
-                                        let text = format!("{}: {}hardware menu init{}",local_time,GREEN,RESET);
-                                        writeln!(file_log,"{}",text)?;
+                                        if let Ok(mut file_log) = fs::OpenOptions::new().create(true).append(true).open("log.txt") {
+                                            let local_time = time_weather::get_time();
+                                            let text = format!("{}: {}hardware menu init{}",local_time,GREEN,RESET);
+                                            writeln!(file_log,"{}",text)?;
+                                        }
 
                                         // ACA UN MENU GUI!
                                         // let text = format!("terminal_x antes de hardware: {}", terminal_x);
                                         hardware_menu(&window_map, &mut terminal_x, &mut terminal_y);
                                         // let text = format!("terminal_x despues de hardware: {}", terminal_x);
                                         
-                                        let local_time = time_weather::get_time();
-                                        let text = format!("{}: {}hardware menu end{}",local_time,GREEN,RESET);
-                                        writeln!(file_log,"{}",text)?;
-                                        
+                                        if let Ok(mut file_log) = fs::OpenOptions::new().create(true).append(true).open("log.txt") {
+                                            let local_time = time_weather::get_time();
+                                            let text = format!("{}: {}hardware menu end{}",local_time,GREEN,RESET);
+                                            writeln!(file_log,"{}",text)?;
+                                        }
 
                                         // if terminal_x CHANGES then repeat
                                         window_map = gui::map_window(terminal_x,terminal_y);
@@ -186,9 +206,6 @@ fn main() -> io::Result<()> {
                                     4 => { gui::clear_terminal(); break},
                                     _ => {},
                                 },
-
-
-
                             "hour_weather" => match select {
                                     0 => {
                                         select = 0;
@@ -255,9 +272,11 @@ fn main() -> io::Result<()> {
     // To fix the bad line that leaves.
     let _ = crossterm::terminal::disable_raw_mode();
     gui::clear_terminal();
-    let local_time = time_weather::get_time();
-    let text = format!("{}: {}Program end{}",local_time,GREEN,RESET);
-    writeln!(file_log,"{}",text)?;
+    if let Ok(mut file_log) = fs::OpenOptions::new().create(true).append(true).open("log.txt") {
+        let local_time = time_weather::get_time();
+        let text = format!("{}: {}Program end{}",local_time,GREEN,RESET);
+        writeln!(file_log,"{}",text)?;
+    }
     println!("Good bye!");
     Ok(())
 }

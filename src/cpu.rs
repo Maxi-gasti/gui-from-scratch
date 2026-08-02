@@ -6,8 +6,7 @@ pub fn cpu_core_num_info () -> u16 {
     if let Ok(cpuinfo) = fs::read_to_string("/proc/cpuinfo") {
         for line in cpuinfo.lines() {
             if line.starts_with("processor") {
-                core_num += 1;
-                
+                core_num += 1;   
             }
         }
     }
