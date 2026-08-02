@@ -23,3 +23,9 @@ pub struct Label {
     pub pos_y: u16,
 }
 
+#[derive(Debug,PartialEq)]
+pub enum Log {
+    Execute,
+    Error,
+    Info
+}

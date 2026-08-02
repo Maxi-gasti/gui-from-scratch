@@ -15,10 +15,15 @@ pub fn cpu_model() -> String {
         for line in cpuinfo.lines() {
             if line.starts_with("model name") {
                 let mut start_count: bool = false;
+                let mut start_countt: bool = false; // for spaces.
                 for (_i,c) in line.chars().enumerate() {
-                    if start_count {
+                    if start_count && start_countt {
                         model_name.push(c);
                     } else {
+                        if c != ' ' && start_count {
+                            start_countt = true;
+                            model_name.push(c);
+                        }
                         if c == ':' {
                             start_count = true;
                         }
@@ -39,14 +44,19 @@ pub fn ram_model() -> String {
     
     let mut model_name = String::new();
     
-    if let Ok(cpuinfo) = fs::read_to_string("/proc/cpuinfo") {
+    if let Ok(cpuinfo) = fs::read_to_string("/proc/meminfo") {
         for line in cpuinfo.lines() {
-            if line.starts_with("model name") {
+            if line.starts_with("MemTotal") {
                 let mut start_count: bool = false;
+                let mut start_countt: bool = false; // for spaces.
                 for (_i,c) in line.chars().enumerate() {
-                    if start_count {
+                    if start_count && start_countt {
                         model_name.push(c);
                     } else {
+                        if c != ' ' && start_count {
+                            start_countt = true;
+                            model_name.push(c);
+                        }
                         if c == ':' {
                             start_count = true;
                         }
