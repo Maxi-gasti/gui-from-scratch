@@ -123,7 +123,7 @@ pub fn ram_info (width: u16,height: u16) -> String {
 
     if y_scale > 1 {
         let true_width: u16 = width -3;
-        text += &format!(" [ Used: {}% ]",percentage);
+        text += &format!(" [ Used: {}% ]",(100 - get_percentage_ram()));
         text += &'\n'.to_string();
         for _i in 0..(y_scale-1) {
             for i2 in 0..true_width {
@@ -154,9 +154,9 @@ pub fn ram_info (width: u16,height: u16) -> String {
             }
         }
         text += &'\n'.to_string();
-        let percentage = { 100 - get_percentage_ram() };
+        let percentage = { 100 - get_percentage_ram()};
         
-        text += &format!(" [ Available: {} ]",percentage);
+        text += &format!(" [ Available: {} ]",get_percentage_ram());
         text += &'\n'.to_string();
         for _i in 0..(y_scale-1) {
             for i2 in 0..true_width {
@@ -189,7 +189,7 @@ pub fn ram_info (width: u16,height: u16) -> String {
         let percentage = {
             100 - (get_free_ram()*100)/ get_total_ram()
         };
-        text += &format!(" [ Free: {} ]",percentage);
+        text += &format!(" [ Free: {} ]",(get_free_ram()*100 / get_total_ram()));
         text += &'\n'.to_string();
         
         for i in 0..(y_scale-1) {
@@ -390,7 +390,6 @@ pub fn ram_info (width: u16,height: u16) -> String {
 // }
 
 fn get_disk_used_space () -> i32 {
-
 
     let mut disk_space: i32 = 0;
 
