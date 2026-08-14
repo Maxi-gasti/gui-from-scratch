@@ -5,6 +5,7 @@ pub mod gui; // functions to operate 2 dimentions vector, for gui proposes, like
 pub mod time_weather; // time and weather libs
 pub mod pc_info; // computer info libs
 pub mod log; // log lib
+pub mod osaka; // secret lib >:) 
 use crossterm::terminal::size;
 use std::io;
 use std::fs;
@@ -239,11 +240,6 @@ fn main() -> io::Result<()> {
     let _ = crossterm::terminal::disable_raw_mode();
     gui::clear_terminal();
     log::log(models::Log::Execute,"Program end","");
-    // if let Ok(mut file_log) = fs::OpenOptions::new().create(true).append(true).open("log.txt") {
-    //     let local_time = time_weather::get_time();
-    //     let text = format!("{}: {}Program end{}",local_time,GREEN,RESET);
-    //     writeln!(file_log,"{}",text)?;
-    // }
     println!("Good bye!");
     Ok(())
 }
@@ -257,16 +253,13 @@ fn hardware_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, terminal_y:
     
     let mut clock_time: u16 = 1;  
     let mut show_clock = {
-        // 20 is the size of the clock
+        // 20 is the size of the clock El fin del código IA: ¿Por qué Linux, Java y Rust han dicho basta? 
         if cpu::cpu_core_num_info() * 3 + 30 <=  percentage(true_x as i32,60) as u16 {
             true
         } else {
             false
         }
     };
-    
-    // print!("wind_x: {}",terminal_x);
-    // print!("wind_y: {}",terminal_y);
 
     // min wind_x = 94 , true_x = 92
     // min wind_y = 21 , true_y = 19
@@ -303,9 +296,6 @@ fn hardware_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, terminal_y:
             Some(models::LabelStyle::Edges))
     ];
     
-    // let cpu_model = cpu::cpu_model();
-    // let ram_model = cpu::cpu_model();
-
     // User
 
     gui::add_label_to_window(&mut window_label_hardware, gui::create_label(
@@ -379,6 +369,21 @@ fn hardware_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, terminal_y:
         Some(models::LabelType::Text),
         Some(models::LabelStyle::Text)
     ));
+    
+    // Osaka thing.
+    gui::add_label_to_window(&mut window_label_hardware, gui::create_label(
+        &osaka::recive_osaka(),
+        Some(&{
+            let x = percentage(true_x as i32,60) - 21.0;
+            x as i32 - 1
+        }),
+        Some(&{
+            let y = true_y as i32 - 15;
+            y as i32
+        }),
+        Some(models::LabelType::Text),
+        Some(models::LabelStyle::Text)
+    ));
 
     let mut vec_label_hardware_select = gui::define_select_labels(&vec_label_hardware);
 
@@ -448,6 +453,7 @@ fn hardware_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, terminal_y:
     loop {
         if crossterm::event::poll(std::time::Duration::from_millis(1000))? {
             match crossterm::event::read()? {
+                // Rezise if the window Width and Height changes.
                 crossterm::event::Event::Resize(width,height) => {
                     *terminal_x = width;
                     *terminal_y = height;
@@ -488,6 +494,79 @@ fn hardware_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, terminal_y:
                             Some(models::LabelStyle::Edges)
                         )
                     ];
+                    // User
+
+                    gui::add_label_to_window(&mut window_label_hardware, gui::create_label(
+                        &format!("{} PC",pc_info::user_name()),
+                        Some(&{
+                            let x = percentage(true_x as i32,60) + 4.0;
+                            x as i32 + 1
+                        }),
+                        Some(&{
+                            let y = percentage(true_y as i32,60) + 5.0;
+                            y as i32 + 1
+                        }),
+                        Some(models::LabelType::Text),
+                        Some(models::LabelStyle::Text)
+                    ));
+
+                    // CPU
+                    gui::add_label_to_window(&mut window_label_hardware, gui::create_label(
+                        &format!("󰻠 : {}",pc_info::cpu_model()),
+                        Some(&{
+                            let x = percentage(true_x as i32,60) + 4.0;
+                            x as i32 + 1
+                        }),
+                        Some(&{
+                            let y = percentage(true_y as i32,60) + 7.0;
+                            y as i32 + 1
+                        }),
+                        Some(models::LabelType::Text),
+                        Some(models::LabelStyle::Text)
+                    ));
+                    // RAM
+                    gui::add_label_to_window(&mut window_label_hardware, gui::create_label(
+                        &format!("󰑭 : {}",pc_info::ram_model()),
+                        Some(&{
+                            let x = percentage(true_x as i32,60) + 4.0;
+                            x as i32 + 1
+                        }),
+                        Some(&{
+                            let y = percentage(true_y as i32,60) + 9.0;
+                            y as i32 + 1
+                        }),
+                        Some(models::LabelType::Text),
+                        Some(models::LabelStyle::Text)
+                    ));
+                    // ROM
+                    gui::add_label_to_window(&mut window_label_hardware, gui::create_label(
+                        &format!(" : {} GB",pc_info::disk_model()),
+                        Some(&{
+                            let x = percentage(true_x as i32,60) + 4.0;
+                            x as i32 + 1
+                        }),
+                        Some(&{
+                            let y = percentage(true_y as i32,60) + 11.0;
+                            y as i32 + 1
+                        }),
+                        Some(models::LabelType::Text),
+                        Some(models::LabelStyle::Text)
+                    ));
+
+                    // CPU THERMAL
+                    gui::add_label_to_window(&mut window_label_hardware, gui::create_label(
+                        &format!("󰻠 : {}ºC",pc_info::thermal_cpu()),
+                        Some(&{
+                            let x = percentage(true_x as i32,60) + 4.0;
+                            x as i32 + 1
+                        }),
+                        Some(&{
+                            let y = percentage(true_y as i32,60) + 13.0;
+                            y as i32 + 1
+                        }),
+                        Some(models::LabelType::Text),
+                        Some(models::LabelStyle::Text)
+                    ));
                     
                     vec_label_hardware_select = gui::define_select_labels(&vec_label_hardware);
                     window_label_hardware = gui::label_window(&window_label_hardware,select_hardware, &vec_label_hardware,&vec_label_hardware_select);
@@ -558,7 +637,6 @@ fn hardware_menu(window_map: &Vec<Vec<String>>,terminal_x: &mut u16, terminal_y:
             Some(models::LabelStyle::Text)
         ));
         
-
         if show_clock {
             gui::add_label_to_window(&mut window_label_hardware, gui::create_label(
                 &cpu::clock(clock_time),
